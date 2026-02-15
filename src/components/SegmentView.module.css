@@ -1,0 +1,117 @@
+.wrapper {
+  max-width: 900px;
+}
+
+.breadcrumb {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+}
+
+.breadcrumb a {
+  color: var(--accent);
+}
+
+.breadcrumbSep {
+  margin: 0 0.4rem;
+}
+
+.header {
+  margin-bottom: 1.5rem;
+}
+
+.title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 0.4rem;
+}
+
+.description {
+  color: var(--text-secondary);
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.metrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.metricCard {
+  padding: 1rem 1.25rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  min-width: 140px;
+}
+
+.metricLabel {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-bottom: 0.25rem;
+}
+
+.metricValue {
+  font-size: 1.25rem;
+  font-weight: 600;
+  font-family: var(--font-mono);
+}
+
+.metricChange {
+  font-size: 0.85rem;
+  margin-left: 0.5rem;
+}
+
+.metricChange[data-trend="up"] {
+  color: var(--success);
+}
+
+.metricChange[data-trend="down"] {
+  color: var(--danger);
+}
+
+.tableSection {
+  margin-bottom: 2rem;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.table th,
+.table td {
+  padding: 0.6rem 1rem;
+  text-align: left;
+  border: 1px solid var(--border);
+}
+
+.table th {
+  background: var(--bg-secondary);
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.table td {
+  background: var(--bg-card);
+  color: var(--text-primary);
+}
+
+.table tbody tr:hover td {
+  background: var(--bg-hover);
+}
+
+.error {
+  color: var(--danger);
+  margin-bottom: 1rem;
+}
+
+.backLink {
+  font-weight: 500;
+}

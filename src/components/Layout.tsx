@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
+import { SidebarNav } from './SidebarNav'
 import styles from './Layout.module.css'
 
 const LOAN_PRODUCTS = ['Loan product 1', 'Loan product 2', 'Loan product 3']
@@ -10,11 +11,6 @@ interface LayoutProps {
 
 export function Layout({ children }: LayoutProps) {
   const location = useLocation()
-  const isDashboard = location.pathname === '/'
-  const isReportsList = location.pathname === '/reports'
-  const searchParams = new URLSearchParams(location.search)
-  const reportGroup = searchParams.get('group')
-
   const [selectedLoanProduct, setSelectedLoanProduct] = useState(LOAN_PRODUCTS[0])
 
   return (
@@ -24,20 +20,7 @@ export function Layout({ children }: LayoutProps) {
           <span className={styles.logoIcon}>◈</span>
           <span>Loan Reports</span>
         </div>
-        <nav className={styles.nav}>
-          <Link to="/" className={isDashboard ? styles.navActive : styles.navLink}>
-            Dashboard
-          </Link>
-          <Link to="/reports" className={isReportsList && !reportGroup ? styles.navActive : styles.navLink}>
-            All reports
-          </Link>
-          <Link to="/reports?group=process" className={reportGroup === 'process' ? styles.navActive : styles.navLink}>
-            Loan process
-          </Link>
-          <Link to="/reports?group=business" className={reportGroup === 'business' ? styles.navActive : styles.navLink}>
-            Loan business
-          </Link>
-        </nav>
+        <SidebarNav />
       </aside>
       <main className={styles.main}>
         <div className={styles.headerRow}>

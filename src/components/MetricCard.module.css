@@ -1,0 +1,42 @@
+.metricCard {
+  padding: 1rem 1.25rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  min-width: 140px;
+  transition: border-color 0.2s, transform 0.15s;
+}
+
+.metricCard.clickable {
+  cursor: pointer;
+}
+
+.metricCard.clickable:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+
+.metricLabel {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-bottom: 0.25rem;
+}
+
+.metricValue {
+  font-size: 1.25rem;
+  font-weight: 600;
+  font-family: var(--font-mono);
+}
+
+.metricChange {
+  font-size: 0.85rem;
+  margin-left: 0.5rem;
+}
+
+.metricChange[data-trend="up"] {
+  color: var(--success);
+}
+
+.metricChange[data-trend="down"] {
+  color: var(--danger);
+}
