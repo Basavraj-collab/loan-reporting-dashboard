@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Loan Business Reporting Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #0f1419;
+      --bg-secondary: #1a2332;
+      --bg-card: #1e2a3a;
+      --bg-hover: #243447;
+      --border: #2d3d52;
+      --text-primary: #e7ecf0;
+      --text-secondary: #8b9cb3;
+      --text-muted: #5c6f87;
+      --accent: #0d9488;
+      --accent-hover: #0f766e;
+      --accent-muted: rgba(13, 148, 136, 0.15);
+      --success: #34d399;
+      --danger: #f87171;
+      --radius: 10px;
+      --radius-sm: 6px;
+      --font-sans: 'DM Sans', system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: var(--font-sans); background: var(--bg-primary); color: var(--text-primary); line-height: 1.5; min-height: 100vh; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { color: var(--accent-hover); }
+    button { font-family: inherit; cursor: pointer; }
+
+    .wrapper { display: flex; min-height: 100vh; }
+    .sidebar {
+      width: 240px; flex-shrink: 0; background: var(--bg-secondary); border-right: 1px solid var(--border);
+      padding: 1.5rem 0; display: flex; flex-direction: column; gap: 2rem;
+    }
+    .logo { display: flex; align-items: center; gap: 0.6rem; padding: 0 1.25rem; font-weight: 700; font-size: 1.1rem; }
+    .logo-icon { color: var(--accent); font-size: 1.4rem; }
+    .nav { display: flex; flex-direction: column; gap: 0.25rem; }
+    .nav-link, .nav-active { padding: 0.6rem 1.25rem; font-weight: 500; transition: color 0.15s, background 0.15s; }
+    .nav-link { color: var(--text-secondary); }
+    .nav-link:hover { color: var(--text-primary); background: var(--bg-hover); }
+    .nav-active { color: var(--accent); background: var(--accent-muted); border-right: 3px solid var(--accent); }
+    .team-section { margin-top: auto; padding: 0 1.25rem; }
+    .team-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 0.5rem; }
+    .team-pill { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0.75rem; background: var(--bg-card); border-radius: var(--radius-sm); font-size: 0.9rem; font-weight: 500; }
+    .main { flex: 1; overflow: auto; padding: 1.5rem 2rem; }
+
+    .hub { max-width: 960px; }
+    .hub .header { margin-bottom: 2rem; }
+    .hub .title { font-size: 1.75rem; font-weight: 700; margin-bottom: 0.35rem; }
+    .hub .subtitle { color: var(--text-secondary); font-size: 0.95rem; }
+    .hub .section { margin-bottom: 2.5rem; }
+    .hub .group-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); }
+    .hub .category-block { margin-bottom: 1.5rem; }
+    .hub .category { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 0.75rem; font-weight: 600; }
+    .hub .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
+    .hub .card { display: block; padding: 1.25rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); transition: border-color 0.2s, background 0.2s; position: relative; }
+    .hub .card:hover { border-color: var(--accent); background: var(--bg-hover); }
+    .hub .card-title { font-size: 1.05rem; font-weight: 600; margin-bottom: 0.4rem; }
+    .hub .card-desc { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.45; }
+    .hub .card-arrow { position: absolute; top: 1.25rem; right: 1.25rem; color: var(--accent); font-size: 1.1rem; }
+
+    .report .breadcrumb { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem; }
+    .report .title { font-size: 1.6rem; font-weight: 700; margin-bottom: 0.4rem; }
+    .report .description { color: var(--text-secondary); font-size: 1rem; margin-bottom: 0.5rem; }
+    .report .category-tag { display: inline-block; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); background: var(--bg-secondary); padding: 0.25rem 0.6rem; border-radius: var(--radius-sm); }
+    .report .metrics { display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem; }
+    .report .metric-card { padding: 1rem 1.25rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); min-width: 140px; }
+    .report .metric-label { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.25rem; }
+    .report .metric-value { font-size: 1.25rem; font-weight: 600; }
+    .report .metric-change { font-size: 0.85rem; margin-left: 0.5rem; }
+    .report .metric-change.up { color: var(--success); }
+    .report .metric-change.down { color: var(--danger); }
+    .report .placeholder { padding: 2rem; background: var(--bg-secondary); border: 1px dashed var(--border); border-radius: var(--radius); color: var(--text-muted); text-align: center; margin-bottom: 2rem; }
+    .report .nav-footer { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+    .report .nav-btn { max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.9rem; }
+    .report .error { color: var(--danger); margin-bottom: 1rem; }
+
+    .team-page .header { margin-bottom: 2rem; }
+    .team-page .title { font-size: 1.75rem; font-weight: 700; margin-bottom: 0.35rem; }
+    .team-page .subtitle { color: var(--text-secondary); font-size: 0.95rem; }
+    .team-page .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; }
+    .team-page .card, .team-page .card-active { display: flex; flex-direction: column; align-items: center; gap: 0.75rem; padding: 1.5rem; border-radius: var(--radius); border: 1px solid var(--border); background: var(--bg-card); transition: border-color 0.2s, background 0.2s; position: relative; }
+    .team-page .card:hover { border-color: var(--accent); background: var(--bg-hover); }
+    .team-page .card-active { border-color: var(--accent); background: var(--accent-muted); }
+    .team-page .card .icon { font-size: 2rem; }
+    .team-page .card .name { font-weight: 600; font-size: 1.05rem; }
+    .team-page .badge { position: absolute; top: 0.5rem; right: 0.5rem; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); font-weight: 600; }
+
+    .dashboard { max-width: 800px; }
+    .dashboard .header { margin-bottom: 2rem; }
+    .dashboard .title { font-size: 1.75rem; font-weight: 700; margin-bottom: 0.35rem; }
+    .dashboard .subtitle { color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 1rem; }
+    .dashboard .team-badge { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: var(--accent-muted); border: 1px solid var(--accent); border-radius: var(--radius-sm); font-size: 0.9rem; font-weight: 600; color: var(--accent); }
+    .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.25rem; margin-bottom: 2rem; }
+    .dashboard-card { display: block; padding: 1.5rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); transition: border-color 0.2s, background 0.2s; position: relative; }
+    .dashboard-card:hover { border-color: var(--accent); background: var(--bg-hover); }
+    .dashboard-card-icon { font-size: 2rem; display: block; margin-bottom: 0.75rem; }
+    .dashboard-card-title { font-size: 1.2rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .dashboard-card-desc { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 0.75rem; }
+    .dashboard-card-meta { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+    .dashboard-card-arrow { position: absolute; top: 1.5rem; right: 1.5rem; color: var(--accent); font-size: 1rem; font-weight: 600; }
+    .dashboard-footer { display: flex; flex-wrap: wrap; gap: 1rem; padding-top: 1rem; border-top: 1px solid var(--border); }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+  <script>
+    const TEAMS = [
+      { id: 'marketing', name: 'Marketing', icon: '📢' },
+      { id: 'finance', name: 'Finance', icon: '💰' },
+      { id: 'legal', name: 'Legal', icon: '⚖️' },
+      { id: 'executives', name: 'Executives', icon: '👔' },
+      { id: 'product', name: 'Product', icon: '📦' },
+      { id: 'portfolio', name: 'Portfolio', icon: '📊' }
+    ];
+    const REPORTS = [
+      { id: 'mkt-campaign-roi', teamId: 'marketing', title: 'Campaign ROI', description: 'Return on investment by channel and campaign for loan acquisition.', category: 'Performance', group: 'business', metrics: [{ label: 'Total ROI', value: '3.2x', change: '+12%', trend: 'up' }, { label: 'Top Channel', value: 'Digital', change: '+8%', trend: 'up' }] },
+      { id: 'mkt-acquisition', teamId: 'marketing', title: 'Acquisition Funnel', description: 'Lead-to-application conversion by source in the loan process.', category: 'Origination', group: 'process', metrics: [{ label: 'Applications', value: '12,450', change: '+5%', trend: 'up' }, { label: 'Conversion', value: '18%', change: '-1%', trend: 'down' }] },
+      { id: 'mkt-channel-mix', teamId: 'marketing', title: 'Channel Mix', description: 'Loan applications and volume by marketing channel.', category: 'Origination', group: 'process' },
+      { id: 'fin-revenue', teamId: 'finance', title: 'Revenue & Margins', description: 'Loan interest income, fees, and net margins.', category: 'Revenue', group: 'business', metrics: [{ label: 'Interest Income', value: '$4.2M', change: '+7%', trend: 'up' }, { label: 'Net Margin', value: '34%', change: '+2%', trend: 'up' }] },
+      { id: 'fin-disbursements', teamId: 'finance', title: 'Disbursements', description: 'Loan disbursement volume and timing.', category: 'Disbursement', group: 'process' },
+      { id: 'fin-provisions', teamId: 'finance', title: 'Provisions & Reserves', description: 'Provision for loan losses and reserve adequacy.', category: 'Risk', group: 'business' },
+      { id: 'leg-compliance', teamId: 'legal', title: 'Compliance Status', description: 'Regulatory and policy compliance for loan business.', category: 'Compliance', group: 'business', metrics: [{ label: 'Open Items', value: '3', change: '-2', trend: 'up' }, { label: 'Audit Ready', value: 'Yes' }] },
+      { id: 'leg-docs', teamId: 'legal', title: 'Documentation', description: 'Loan document completeness and exceptions.', category: 'Documentation', group: 'process' },
+      { id: 'leg-disputes', teamId: 'legal', title: 'Disputes & Litigation', description: 'Active loan-related disputes and litigation summary.', category: 'Disputes', group: 'business' },
+      { id: 'exec-summary', teamId: 'executives', title: 'Executive Summary', description: 'Key loan business and process metrics at a glance.', category: 'Overview', group: 'business', metrics: [{ label: 'Portfolio Size', value: '$128M', change: '+9%', trend: 'up' }, { label: 'Delinquency', value: '2.1%', change: '-0.3%', trend: 'up' }, { label: 'NPL Ratio', value: '1.2%', change: '-0.1%', trend: 'up' }] },
+      { id: 'exec-kpis', teamId: 'executives', title: 'KPIs', description: 'Strategic key performance indicators for loan business.', category: 'Strategy', group: 'business' },
+      { id: 'exec-forecast', teamId: 'executives', title: 'Forecast vs Actual', description: 'Loan budget and forecast comparison.', category: 'Planning', group: 'business' },
+      { id: 'prod-usage', teamId: 'product', title: 'Product Usage', description: 'Loan product mix and utilization.', category: 'Usage', group: 'process', metrics: [{ label: 'Personal Loans', value: '42%' }, { label: 'Mortgage', value: '38%' }] },
+      { id: 'prod-features', teamId: 'product', title: 'Feature Adoption', description: 'Adoption of digital and loan product features.', category: 'Adoption', group: 'business' },
+      { id: 'prod-feedback', teamId: 'product', title: 'Feedback & NPS', description: 'Customer feedback and NPS for loan products.', category: 'Feedback', group: 'business' },
+      { id: 'port-overview', teamId: 'portfolio', title: 'Portfolio Overview', description: 'Total loan book size, mix, and growth.', category: 'Overview', group: 'business', metrics: [{ label: 'Total Book', value: '$128M', change: '+9%', trend: 'up' }, { label: 'Avg Loan Size', value: '$24.5K', change: '+2%', trend: 'up' }] },
+      { id: 'port-delinquency', teamId: 'portfolio', title: 'Delinquency & NPL', description: 'Days past due and non-performing loans.', category: 'Risk', group: 'business' },
+      { id: 'port-concentration', teamId: 'portfolio', title: 'Concentration', description: 'Loan exposure by segment, product, and geography.', category: 'Risk', group: 'business' }
+    ];
+
+    function getTeam() {
+      const m = location.hash.match(/[?&]team=([^&]+)/);
+      return m ? m[1] : 'executives';
+    }
+    function getGroup() {
+      const m = location.hash.match(/[?&]group=([^&]+)/);
+      return m ? m[1] : null;
+    }
+    function getReportsByTeam(teamId) { return REPORTS.filter(r => r.teamId === teamId); }
+    function getReportsByTeamAndGroup(teamId, group) { return REPORTS.filter(r => r.teamId === teamId && r.group === group); }
+    function getReportById(id) { return REPORTS.find(r => r.id === id); }
+    function getCategories(teamId, group) {
+      const r = group ? getReportsByTeam(teamId).filter(x => x.group === group) : getReportsByTeam(teamId);
+      return [...new Set(r.map(x => x.category))].sort();
+    }
+
+    function teamLink(teamId) { return '#/reports?team=' + teamId; }
+    function reportLink(id) { return '#/reports/' + id + '?team=' + getTeam(); }
+    function reportsHash(opts) {
+      const team = getTeam();
+      const g = (opts && opts.group) ? '&group=' + opts.group : (getGroup() ? '&group=' + getGroup() : '');
+      return '#/reports?team=' + team + g;
+    }
+    function dashboardHash() { return '#/?team=' + getTeam(); }
+    function processHash() { return '#/reports?team=' + getTeam() + '&group=process'; }
+    function businessHash() { return '#/reports?team=' + getTeam() + '&group=business'; }
+
+    function render() {
+      const hash = location.hash.slice(1) || '/';
+      const [path, qs] = hash.split('?');
+      let teamId = (qs && (qs.match(/team=([^&]+)/) || [])[1]) || 'executives';
+      const group = (qs && (qs.match(/group=([^&]+)/) || [])[1]) || null;
+      const parts = path.split('/').filter(Boolean);
+      const isDashboard = parts.length === 0 || parts[0] === '';
+      const isReports = parts[0] === 'reports';
+      const reportId = isReports && parts[1] ? parts[1] : null;
+      const isTeam = path === 'team' || parts[0] === 'team';
+
+      const currentTeam = TEAMS.find(t => t.id === teamId) || TEAMS[0];
+      const sidebar = `
+        <div class="sidebar">
+          <div class="logo"><span class="logo-icon">◈</span><span>Loan Reports</span></div>
+          <nav class="nav">
+            <a href="${dashboardHash()}" class="${isDashboard ? 'nav-active' : 'nav-link'}">Dashboard</a>
+            <a href="${'#/reports?team=' + teamId}" class="${isReports && !reportId && !group ? 'nav-active' : 'nav-link'}">All reports</a>
+            <a href="${processHash()}" class="${isReports && group === 'process' ? 'nav-active' : 'nav-link'}">Loan process</a>
+            <a href="${businessHash()}" class="${isReports && group === 'business' ? 'nav-active' : 'nav-link'}">Loan business</a>
+            <a href="#/team" class="${isTeam ? 'nav-active' : 'nav-link'}">Switch team</a>
+          </nav>
+          <div class="team-section">
+            <div class="team-label">Current team</div>
+            <div class="team-pill"><span>${currentTeam.icon}</span><span>${currentTeam.name}</span></div>
+          </div>
+        </div>`;
+
+      let main = '';
+      if (isDashboard) {
+        const processCount = getReportsByTeamAndGroup(teamId, 'process').length;
+        const businessCount = getReportsByTeamAndGroup(teamId, 'business').length;
+        main = `
+          <div class="dashboard">
+            <header class="header">
+              <h1 class="title">Loan Reporting Dashboard</h1>
+              <p class="subtitle">View loan process and loan business reports for your team. Choose a category below to navigate.</p>
+              <div class="team-badge"><span>${currentTeam.icon}</span><span>${currentTeam.name}</span></div>
+            </header>
+            <nav class="dashboard-grid">
+              <a href="${processHash()}" class="dashboard-card">
+                <span class="dashboard-card-icon">📋</span>
+                <h2 class="dashboard-card-title">Loan Process</h2>
+                <p class="dashboard-card-desc">Origination, underwriting, disbursement, documentation, and servicing.</p>
+                <span class="dashboard-card-meta">${processCount} reports</span>
+                <span class="dashboard-card-arrow">View →</span>
+              </a>
+              <a href="${businessHash()}" class="dashboard-card">
+                <span class="dashboard-card-icon">📊</span>
+                <h2 class="dashboard-card-title">Loan Business</h2>
+                <p class="dashboard-card-desc">Portfolio, risk, revenue, compliance, and strategy.</p>
+                <span class="dashboard-card-meta">${businessCount} reports</span>
+                <span class="dashboard-card-arrow">View →</span>
+              </a>
+            </nav>
+            <div class="dashboard-footer">
+              <a href="${'#/reports?team=' + teamId}">All reports for ${currentTeam.name}</a>
+              <a href="#/team">Switch team</a>
+            </div>
+          </div>`;
+      } else if (isTeam) {
+        main = `
+          <div class="team-page">
+            <header class="header"><h1 class="title">Switch team</h1><p class="subtitle">Choose your team to see the reports that matter to you.</p></header>
+            <div class="grid">
+              ${TEAMS.map(t => `<a href="${teamLink(t.id)}" class="card${t.id === teamId ? ' card-active' : ''}"><span class="icon">${t.icon}</span><span class="name">${t.name}</span>${t.id === teamId ? '<span class="badge">Current</span>' : ''}</a>`).join('')}
+            </div>
+          </div>`;
+      } else if (reportId) {
+        const report = getReportById(reportId);
+        const teamReports = getReportsByTeam(teamId);
+        const idx = report ? teamReports.findIndex(r => r.id === report.id) : -1;
+        const prev = idx > 0 ? teamReports[idx - 1] : null;
+        const next = idx >= 0 && idx < teamReports.length - 1 ? teamReports[idx + 1] : null;
+        const search = '?team=' + teamId;
+        if (!report) {
+          main = `<div class="report"><p class="error">Report not found.</p><a href="${reportsHash()}">← Back to reports</a></div>`;
+        } else {
+          const metricsHtml = (report.metrics || []).map(m => `
+            <div class="metric-card"><div class="metric-label">${m.label}</div><div class="metric-value">${m.value}${m.change != null ? `<span class="metric-change ${m.trend || ''}">${m.change}</span>` : ''}</div></div>`).join('');
+          main = `
+            <div class="report">
+              <nav class="breadcrumb"><a href="${reportsHash()}">Reports</a> / <span>${report.title}</span></nav>
+              <header><h1 class="title">${report.title}</h1><p class="description">${report.description}</p><span class="category-tag">${report.category}</span></header>
+              ${metricsHtml ? '<div class="metrics">' + metricsHtml + '</div>' : ''}
+              <div class="placeholder"><p>Report content and charts would load here. Data is mock for this demo.</p></div>
+              <footer class="nav-footer">
+                ${prev ? `<a href="#/reports/${prev.id}${search}" class="nav-btn">← ${prev.title}</a>` : '<span></span>'}
+                <a href="${reportsHash()}" class="nav-btn">All reports</a>
+                ${next ? `<a href="#/reports/${next.id}${search}" class="nav-btn">${next.title} →</a>` : '<span></span>'}
+              </footer>
+            </div>`;
+        }
+      } else {
+        const allReports = getReportsByTeam(teamId);
+        const processReports = allReports.filter(r => r.group === 'process');
+        const businessReports = allReports.filter(r => r.group === 'business');
+        const sections = group
+          ? [{ label: group === 'process' ? 'Loan process' : 'Loan business', reports: allReports.filter(r => r.group === group) }]
+          : [
+              { label: 'Loan process', reports: processReports },
+              { label: 'Loan business', reports: businessReports }
+            ];
+        const hubTitle = group ? (group === 'process' ? 'Loan process' : 'Loan business') : 'Reports';
+        const hubSubtitle = group
+          ? 'Reports for ' + (group === 'process' ? 'loan process' : 'loan business') + '. Select one to view details.'
+          : 'Loan process and loan business reports for your team. Select a report or use the sidebar to filter.';
+        main = `
+          <div class="hub">
+            <header class="header">
+              <h1 class="title">${hubTitle}</h1>
+              <p class="subtitle">${hubSubtitle} ${group ? '<a href="#/reports?team=' + teamId + '">Show all reports</a>' : ''}</p>
+            </header>
+            ${sections.map(sec => {
+              if (sec.reports.length === 0) return '';
+              const categories = getCategories(teamId, group || (sec.reports[0] && sec.reports[0].group));
+              return `<section class="section"><h2 class="group-title">${sec.label}</h2>${categories.map(cat => {
+                const list = sec.reports.filter(r => r.category === cat);
+                if (list.length === 0) return '';
+                return `<div class="category-block"><h3 class="category">${cat}</h3><div class="grid">${list.map(r => `<a href="${reportLink(r.id)}" class="card"><h3 class="card-title">${r.title}</h3><p class="card-desc">${r.description}</p><span class="card-arrow">→</span></a>`).join('')}</div></div>`;
+              }).join('')}</section>`;
+            }).join('')}
+          </div>`;
+      }
+
+      document.getElementById('app').innerHTML = '<div class="wrapper">' + sidebar + '<main class="main">' + main + '</main></div>';
+    }
+
+    window.addEventListener('hashchange', render);
+    if (!location.hash) location.hash = '#/?team=executives';
+    render();
+  </script>
+</body>
+</html>
