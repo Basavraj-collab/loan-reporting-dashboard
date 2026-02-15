@@ -53,6 +53,38 @@ export const reports: Report[] = [
       ],
     },
   },
+  {
+    id: 'channel-mix',
+    title: 'Channel Mix',
+    description: 'Loan applications by marketing channel.',
+    category: 'Origination',
+    group: 'process',
+    metrics: [
+      { label: 'Digital Share', value: '41%', change: '+3%', trend: 'up' },
+      { label: 'Branch Share', value: '31%', change: '-1%', trend: 'down' },
+      { label: 'Referral Share', value: '28%', change: '-2%', trend: 'down' },
+    ],
+    table: {
+      headers: ['Channel', 'Applications', 'Share', 'YoY'],
+      rows: [
+        ['Digital', 5100, '41%', '+12%'],
+        ['Branch', 3860, '31%', '+2%'],
+        ['Referral', 3490, '28%', '-1%'],
+      ],
+    },
+  },
+  {
+    id: 'application-sources',
+    title: 'Application Sources',
+    description: 'Applications by geographic region and source.',
+    category: 'Origination',
+    group: 'process',
+    metrics: [
+      { label: 'North Region', value: '4,200', change: '+6%', trend: 'up' },
+      { label: 'South Region', value: '3,850', change: '+4%', trend: 'up' },
+      { label: 'East Region', value: '2,400', change: '+8%', trend: 'up' },
+    ],
+  },
   // Loan Process – Underwriting
   {
     id: 'underwriting-backlog',
@@ -86,6 +118,26 @@ export const reports: Report[] = [
       { label: 'Decline Rate', value: '28.4%', change: '-1.5%', trend: 'up' },
     ],
   },
+  {
+    id: 'decision-rates-segment',
+    title: 'Decision Rates by Segment',
+    description: 'Approval and decline rates by product segment.',
+    category: 'Underwriting',
+    group: 'process',
+    metrics: [
+      { label: 'Personal Loan Approve', value: '68%', change: '+2%', trend: 'up' },
+      { label: 'Mortgage Approve', value: '72%', change: '+1%', trend: 'up' },
+      { label: 'Auto Approve', value: '76%', change: '0%', trend: undefined },
+    ],
+    table: {
+      headers: ['Segment', 'Approved', 'Declined', 'Rate'],
+      rows: [
+        ['Personal', 3800, 1800, '67.9%'],
+        ['Mortgage', 3200, 1250, '71.9%'],
+        ['Auto', 1920, 480, '80.0%'],
+      ],
+    },
+  },
   // Loan Process – Disbursement
   {
     id: 'disbursements',
@@ -108,6 +160,18 @@ export const reports: Report[] = [
     },
   },
   {
+    id: 'disbursement-timeline',
+    title: 'Disbursement Timeline',
+    description: 'Daily and weekly disbursement trends.',
+    category: 'Disbursement',
+    group: 'process',
+    metrics: [
+      { label: 'Avg Daily', value: '$1.2M', change: '+8%', trend: 'up' },
+      { label: 'Peak Day', value: 'Wed', change: undefined, trend: undefined },
+      { label: 'Week-on-Week', value: '+4%', change: '+4%', trend: 'up' },
+    ],
+  },
+  {
     id: 'documentation',
     title: 'Documentation Status',
     description: 'Document completeness and exceptions.',
@@ -118,6 +182,26 @@ export const reports: Report[] = [
       { label: 'Exceptions', value: '86', change: '-14', trend: 'up' },
       { label: 'Avg Days to Complete', value: '4.2', change: '-0.3', trend: 'up' },
     ],
+  },
+  {
+    id: 'documentation-exceptions',
+    title: 'Documentation Exceptions',
+    description: 'Outstanding document exceptions by type.',
+    category: 'Documentation',
+    group: 'process',
+    metrics: [
+      { label: 'Income Proof', value: '32', change: '-5', trend: 'up' },
+      { label: 'ID Verification', value: '28', change: '-8', trend: 'up' },
+      { label: 'Collateral Docs', value: '26', change: '-1', trend: 'up' },
+    ],
+    table: {
+      headers: ['Exception Type', 'Count', 'Aging', 'Priority'],
+      rows: [
+        ['Income Proof', 32, '5 days', 'High'],
+        ['ID Verification', 28, '3 days', 'High'],
+        ['Collateral Docs', 26, '7 days', 'Medium'],
+      ],
+    },
   },
   // Loan Business – Portfolio
   {
@@ -137,6 +221,38 @@ export const reports: Report[] = [
         ['Personal', 52000000, 2120, '40.6%'],
         ['Mortgage', 48000000, 1850, '37.5%'],
         ['Auto', 28000000, 1250, '21.9%'],
+      ],
+    },
+  },
+  {
+    id: 'product-mix',
+    title: 'Product Mix',
+    description: 'Loan product mix and utilization trends.',
+    category: 'Portfolio',
+    group: 'business',
+    metrics: [
+      { label: 'Personal Loans', value: '40.6%', change: '+0.5%', trend: 'up' },
+      { label: 'Mortgage', value: '37.5%', change: '-0.3%', trend: 'down' },
+      { label: 'Auto', value: '21.9%', change: '-0.2%', trend: 'down' },
+    ],
+  },
+  {
+    id: 'growth-by-segment',
+    title: 'Growth by Segment',
+    description: 'Portfolio growth by product segment.',
+    category: 'Portfolio',
+    group: 'business',
+    metrics: [
+      { label: 'Personal Growth', value: '+11%', change: '+2%', trend: 'up' },
+      { label: 'Mortgage Growth', value: '+7%', change: '0%', trend: undefined },
+      { label: 'Auto Growth', value: '+8%', change: '+1%', trend: 'up' },
+    ],
+    table: {
+      headers: ['Segment', 'Prev Month', 'Current', 'Growth'],
+      rows: [
+        ['Personal', 46800000, 52000000, '+11.1%'],
+        ['Mortgage', 44800000, 48000000, '+7.1%'],
+        ['Auto', 25900000, 28000000, '+8.1%'],
       ],
     },
   },
@@ -174,6 +290,18 @@ export const reports: Report[] = [
       { label: 'Max Single Borrower', value: '0.8%', change: '0%', trend: undefined },
     ],
   },
+  {
+    id: 'credit-loss-forecast',
+    title: 'Credit Loss Forecast',
+    description: 'Projected credit losses and provisions.',
+    category: 'Risk',
+    group: 'business',
+    metrics: [
+      { label: 'Expected Loss', value: '$1.2M', change: '-5%', trend: 'up' },
+      { label: 'Provision Coverage', value: '1.1x', change: '+0.05', trend: 'up' },
+      { label: 'NPL Trend', value: 'Stable', change: undefined, trend: undefined },
+    ],
+  },
   // Loan Business – Revenue
   {
     id: 'revenue-margins',
@@ -195,6 +323,26 @@ export const reports: Report[] = [
       ],
     },
   },
+  {
+    id: 'fee-analysis',
+    title: 'Fee Analysis',
+    description: 'Fee income by type and product.',
+    category: 'Revenue',
+    group: 'business',
+    metrics: [
+      { label: 'Origination Fees', value: '$420K', change: '+6%', trend: 'up' },
+      { label: 'Late Fees', value: '$120K', change: '-12%', trend: 'up' },
+      { label: 'Other Fees', value: '$260K', change: '+3%', trend: 'up' },
+    ],
+    table: {
+      headers: ['Fee Type', 'YTD', 'Prev YTD', 'Change'],
+      rows: [
+        ['Origination', 420000, 396000, '+6.1%'],
+        ['Late', 120000, 136000, '-11.8%'],
+        ['Other', 260000, 252000, '+3.2%'],
+      ],
+    },
+  },
   // Loan Business – Compliance
   {
     id: 'compliance-status',
@@ -208,6 +356,26 @@ export const reports: Report[] = [
       { label: 'Last Review', value: 'Jan 2025', change: undefined, trend: undefined },
     ],
   },
+  {
+    id: 'regulatory-checklist',
+    title: 'Regulatory Checklist',
+    description: 'Regulatory requirements and compliance status.',
+    category: 'Compliance',
+    group: 'business',
+    metrics: [
+      { label: 'Complete', value: '18/20', change: '+2', trend: 'up' },
+      { label: 'Pending', value: '2', change: '-1', trend: 'up' },
+      { label: 'Due Date', value: 'Mar 15', change: undefined, trend: undefined },
+    ],
+    table: {
+      headers: ['Requirement', 'Status', 'Due', 'Owner'],
+      rows: [
+        ['TILA Disclosure', 'Complete', '-', 'Legal'],
+        ['Fair Lending', 'Complete', '-', 'Risk'],
+        ['BSA/AML Review', 'Pending', 'Mar 15', 'Compliance'],
+      ],
+    },
+  },
   // Loan Business – Overview
   {
     id: 'executive-summary',
@@ -220,6 +388,18 @@ export const reports: Report[] = [
       { label: 'Delinquency', value: '2.1%', change: '-0.3%', trend: 'up' },
       { label: 'NPL Ratio', value: '1.2%', change: '-0.1%', trend: 'up' },
       { label: 'Revenue YTD', value: '$5.0M', change: '+6%', trend: 'up' },
+    ],
+  },
+  {
+    id: 'key-metrics',
+    title: 'Key Metrics',
+    description: 'Top-level KPIs and performance indicators.',
+    category: 'Overview',
+    group: 'business',
+    metrics: [
+      { label: 'Approval Rate', value: '71.6%', change: '+1.2%', trend: 'up' },
+      { label: 'Avg Processing Time', value: '2.3 days', change: '-0.2', trend: 'up' },
+      { label: 'Customer NPS', value: '62', change: '+3', trend: 'up' },
     ],
   },
 ]

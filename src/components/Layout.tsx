@@ -40,12 +40,12 @@ export function Layout({ children }: LayoutProps) {
         </nav>
       </aside>
       <main className={styles.main}>
-        <div className={styles.topBar}>
-          <div className={styles.topRow}>
+        <div className={styles.headerRow}>
+          <div className={styles.locationBank}>
             <span className={styles.topLabel}>Location</span>
             <span className={styles.topLabel}>Bank</span>
           </div>
-          <div className={styles.loanProductRow}>
+          <div className={styles.loanProductWrap}>
             <div className={styles.selectGroup}>
               <label className={styles.selectLabel}>Loan product</label>
               <select

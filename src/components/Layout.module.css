@@ -91,19 +91,21 @@
   gap: 1.5rem;
 }
 
-.topBar {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 1rem 1.25rem;
+.headerRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
   flex-shrink: 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
 }
 
-.topRow {
+.locationBank {
   display: flex;
   align-items: center;
   gap: 2rem;
-  margin-bottom: 1rem;
 }
 
 .topLabel {
@@ -112,10 +114,13 @@
   color: var(--text-primary);
 }
 
-.loanProductRow {
+.loanProductWrap {
   display: flex;
-  flex-wrap: wrap;
-  gap: 1.5rem;
+  justify-content: flex-end;
+}
+
+.loanProductWrap .selectGroup {
+  min-width: 180px;
 }
 
 .selectGroup {
