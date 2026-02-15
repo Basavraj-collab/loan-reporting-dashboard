@@ -1,11 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     typescript: {
-      // This allows the build to succeed even if there are TS errors
+      // This ignores the 'never read' and 'property does not exist' errors
       ignoreBuildErrors: true,
     },
     eslint: {
-      // This ignores linting errors (like 'Link' is unused) during builds
+      // This ignores the 'Link' unused and other linting errors
       ignoreDuringBuilds: true,
     },
   };
