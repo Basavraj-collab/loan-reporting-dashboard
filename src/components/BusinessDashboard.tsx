@@ -326,6 +326,15 @@ function DisbursementOverviewView({ reports }: { reports: AnyReport[] }) {
               </table>
             </div>
           )}
+          <div className={styles.sectionActions}>
+            <Link
+              to="/segment/disbursement/loan-product-analysis"
+              className={styles.navLink}
+            >
+              <span>View detailed product-wise analysis</span>
+              <span>→</span>
+            </Link>
+          </div>
         </section>
 
         <section className={styles.section}>
@@ -393,16 +402,6 @@ function DisbursementOverviewView({ reports }: { reports: AnyReport[] }) {
               </table>
             </div>
           )}
-
-          <div className={styles.sectionActions}>
-            <Link
-              to="/segment/disbursement/loan-product-analysis"
-              className={styles.navLink}
-            >
-              <span>View detailed product-wise analysis</span>
-              <span>→</span>
-            </Link>
-          </div>
         </section>
       </div>
     </div>
@@ -415,6 +414,11 @@ function RepaymentOverviewView({ reports }: { reports: AnyReport[] }) {
   const npaOverview = reports.find((r) => r.id === 'npa-overview')
   const byStatus = reports.find((r) => r.id === 'repayment-by-status')
   const byDueBands = reports.find((r) => r.id === 'repayment-by-due-bands')
+  
+  // Get product-wise reports from repayment segment
+  const collectionByProduct = getReportsBySubSegment('repayment', 'collection-analysis').find((r) => r.id === 'collection-by-product')
+  const riskByProduct = getReportsBySubSegment('repayment', 'risk-analysis').find((r) => r.id === 'risk-by-product')
+  const writeOffReport = getReportsBySubSegment('repayment', 'risk-analysis').find((r) => r.id === 'write-off-analysis')
 
   return (
     <div className={styles.wrapper}>
@@ -424,15 +428,53 @@ function RepaymentOverviewView({ reports }: { reports: AnyReport[] }) {
             <h2 className={styles.sectionTitle}>Repayment KPIs</h2>
           </div>
           <div className={styles.metricsGrid}>
-            {repaymentMetrics?.metrics.map((metric, i) => (
+            {repaymentMetrics?.metrics.filter((m) => m.label === 'Repayment Rate').map((metric, i) => (
               <MetricCard key={i} metric={metric} report={repaymentMetrics} />
             ))}
-            {collectionMetrics?.metrics.map((metric, i) => (
+            {collectionMetrics?.metrics.filter((m) => m.label === 'Collection Efficiency').map((metric, i) => (
               <MetricCard key={`collection-${i}`} metric={metric} report={collectionMetrics} />
             ))}
             {npaOverview?.metrics.map((metric, i) => (
               <MetricCard key={`npa-${i}`} metric={metric} report={npaOverview} />
             ))}
+            {writeOffReport?.metrics.filter((m) => m.label === 'Write-off Rate').map((metric, i) => (
+              <MetricCard key={`writeoff-${i}`} metric={metric} report={writeOffReport} />
+            ))}
+          </div>
+        </section>
+
+        <section className={styles.section}>
+          <div className={styles.sectionHeader}>
+            <h2 className={styles.sectionTitle}>Product-wise metrics</h2>
+          </div>
+          {collectionByProduct && (
+            <div style={{ marginBottom: '1.5rem' }}>
+              <h3 style={{ fontSize: '0.95rem', fontWeight: 600, marginBottom: '0.75rem', color: 'var(--text-secondary)' }}>Collection by Product</h3>
+              <div className={styles.metricsGrid}>
+                {collectionByProduct.metrics.map((metric, i) => (
+                  <MetricCard key={`col-prod-${i}`} metric={metric} report={collectionByProduct} />
+                ))}
+              </div>
+            </div>
+          )}
+          {riskByProduct && (
+            <div style={{ marginBottom: '1.5rem' }}>
+              <h3 style={{ fontSize: '0.95rem', fontWeight: 600, marginBottom: '0.75rem', color: 'var(--text-secondary)' }}>NPA by Product</h3>
+              <div className={styles.metricsGrid}>
+                {riskByProduct.metrics.map((metric, i) => (
+                  <MetricCard key={`risk-prod-${i}`} metric={metric} report={riskByProduct} />
+                ))}
+              </div>
+            </div>
+          )}
+          <div className={styles.sectionActions}>
+            <Link
+              to="/segment/repayment/collection-analysis"
+              className={styles.navLink}
+            >
+              <span>View detailed product-wise analysis</span>
+              <span>→</span>
+            </Link>
           </div>
         </section>
 

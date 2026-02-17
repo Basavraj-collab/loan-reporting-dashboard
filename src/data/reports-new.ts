@@ -242,7 +242,6 @@ export const reports: Report[] = [
     metrics: [
       { label: 'NPL Ratio', value: '1.2%', change: '-0.1%', trend: 'up' },
       { label: 'NPA Amount', value: '$1.54M', change: '-5%', trend: 'up' },
-      { label: 'Provision Coverage', value: '1.1x', change: '+0.05', trend: 'up' },
     ],
   },
   {

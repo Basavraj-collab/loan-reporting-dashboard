@@ -11,6 +11,7 @@ export function DataPopup({ title, data, onClose }: DataPopupProps) {
   const [selectedColumns, setSelectedColumns] = useState<boolean[]>(
     () => data.headers.map(() => true),
   )
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
 
   const visibleColumnIndexes = useMemo(
     () => selectedColumns.flatMap((selected, index) => (selected ? index : [])),
@@ -51,6 +52,8 @@ export function DataPopup({ title, data, onClose }: DataPopupProps) {
     URL.revokeObjectURL(url)
   }
 
+  const selectedCount = selectedColumns.filter(Boolean).length
+
   return (
     <div className={styles.overlay} onClick={onClose}>
       <div className={styles.popup} onClick={(e) => e.stopPropagation()}>
@@ -58,26 +61,36 @@ export function DataPopup({ title, data, onClose }: DataPopupProps) {
           <h3 className={styles.title}>{title}</h3>
           <div className={styles.controls}>
             <div className={styles.columnsSelector}>
-              <span className={styles.columnsLabel}>Columns:</span>
-              <div className={styles.columnsList}>
-                {data.headers.map((h, index) => (
-                  <label key={h} className={styles.columnItem}>
-                    <input
-                      type="checkbox"
-                      checked={selectedColumns[index]}
-                      onChange={() => toggleColumn(index)}
-                    />
-                    <span>{h}</span>
-                  </label>
-                ))}
-              </div>
+              <button
+                type="button"
+                className={styles.dropdownButton}
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              >
+                <span>Columns ({selectedCount}/{data.headers.length})</span>
+                <span className={styles.dropdownIcon}>{isDropdownOpen ? '▲' : '▼'}</span>
+              </button>
+              {isDropdownOpen && (
+                <div className={styles.dropdownMenu}>
+                  {data.headers.map((h, index) => (
+                    <label key={h} className={styles.columnItem}>
+                      <input
+                        type="checkbox"
+                        checked={selectedColumns[index]}
+                        onChange={() => toggleColumn(index)}
+                      />
+                      <span>{h}</span>
+                    </label>
+                  ))}
+                </div>
+              )}
             </div>
             <button
               className={styles.downloadButton}
               type="button"
               onClick={handleDownload}
+              title="Download CSV"
             >
-              Download
+              ⬇
             </button>
             <button className={styles.closeButton} onClick={onClose} type="button">
               ×
