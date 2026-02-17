@@ -56,30 +56,6 @@ export const segments: Segment[] = [
     ],
   },
   {
-    id: 'marketing-audience',
-    name: 'Marketing & Audience Intelligence',
-    subSegments: [
-      {
-        id: 'marketing-analytics',
-        name: 'Marketing Analytics',
-        reportIds: [
-          'channel-analysis',
-          'campaign-performance',
-          'channel-metrics',
-        ],
-      },
-      {
-        id: 'audience-intelligence',
-        name: 'Audience Intelligence Analysis',
-        reportIds: [
-          'customer-comparison',
-          'geography-insights',
-          'base-eligible-active',
-        ],
-      },
-    ],
-  },
-  {
     id: 'banking-hygiene',
     name: 'Banking Reports & Hygiene',
     subSegments: [
@@ -99,6 +75,30 @@ export const segments: Segment[] = [
         reportIds: [
           'disbursement-reconciliation',
           'repayment-reconciliation',
+        ],
+      },
+    ],
+  },
+  {
+    id: 'marketing-audience',
+    name: 'Marketing & Audience Intelligence',
+    subSegments: [
+      {
+        id: 'marketing-analytics',
+        name: 'Marketing Analytics',
+        reportIds: [
+          'channel-analysis',
+          'campaign-performance',
+          'channel-metrics',
+        ],
+      },
+      {
+        id: 'audience-intelligence',
+        name: 'Audience Intelligence Analysis',
+        reportIds: [
+          'customer-comparison',
+          'geography-insights',
+          'base-eligible-active',
         ],
       },
     ],

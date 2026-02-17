@@ -4,6 +4,40 @@
   gap: 0.5rem;
 }
 
+.pinned,
+.pinnedActive {
+  padding: 0.6rem 1.25rem;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+  transition: color 0.15s, background 0.15s;
+}
+
+.pinned:hover {
+  color: var(--text-primary);
+  background: var(--bg-hover);
+}
+
+.pinnedActive {
+  color: var(--accent);
+  background: var(--accent-muted);
+  border-right: 3px solid var(--accent);
+}
+
+.segmentGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.groupBody {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
 .segment {
   display: flex;
   flex-direction: column;
