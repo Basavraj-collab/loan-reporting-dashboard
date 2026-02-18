@@ -1,0 +1,139 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding: 0.6rem 1.25rem;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--text-primary);
+}
+
+.logoIcon {
+  color: var(--accent);
+  font-size: 1.2rem;
+}
+
+.breadcrumbNav {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.pinnedBtn {
+  padding: 0.35rem 0.6rem;
+  font-size: 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.pinnedBtn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.sep {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+.breadcrumbLabel {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.breadcrumbSelect {
+  padding: 0.35rem 0.6rem;
+  font-size: 0.85rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.breadcrumbSep {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.breadcrumbSub {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.subNav {
+  width: 200px;
+  flex-shrink: 0;
+  padding: 1rem;
+  background: var(--bg-secondary);
+  border-right: 1px solid var(--border);
+}
+
+.subNavTitle {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  margin: 0 0 0.75rem;
+}
+
+.subNavLinks {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.subNavLink,
+.subNavActive {
+  display: block;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.9rem;
+  border-radius: var(--radius);
+  text-decoration: none;
+  color: var(--text-secondary);
+  transition: background 0.15s, color 0.15s;
+}
+
+.subNavLink:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.subNavActive {
+  background: var(--accent-muted);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.main {
+  flex: 1;
+  overflow: auto;
+  padding: 1.5rem 2rem;
+}
