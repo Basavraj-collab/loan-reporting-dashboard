@@ -3,6 +3,11 @@ import { Link, useParams } from 'react-router-dom'
 import { getReportsBySubSegment } from '../data/reports-new'
 import { MetricCard } from './MetricCard'
 import { BankingReportsView } from './BankingReportsView'
+import {
+  ProductWiseDisbursementView,
+  ProductWiseCollectionView,
+  ProductWiseRiskView,
+} from './ProductWiseViews'
 import styles from './BusinessDashboard.module.css'
 
 export function BusinessDashboard() {
@@ -11,6 +16,16 @@ export function BusinessDashboard() {
 
   if (segmentId === 'banking-hygiene' && subSegmentId === 'banking-reports') {
     return <BankingReportsView />
+  }
+
+  if (segmentId === 'disbursement' && subSegmentId === 'loan-product-analysis') {
+    return <ProductWiseDisbursementView />
+  }
+  if (segmentId === 'repayment' && subSegmentId === 'collection-analysis') {
+    return <ProductWiseCollectionView />
+  }
+  if (segmentId === 'repayment' && subSegmentId === 'risk-analysis') {
+    return <ProductWiseRiskView />
   }
 
   if (segmentId === 'business-dashboard') {
