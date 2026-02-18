@@ -1,3 +1,4 @@
+import { useState, useMemo, useRef, useEffect } from 'react'
 import { BarLineChart } from './BarLineChart'
 import type { ProductWiseSectionData } from '../data/productWiseReportData'
 import styles from './ProductWiseSection.module.css'
@@ -33,7 +34,42 @@ export function ProductWiseSection({
 }) {
   const formatAmount = variant === 'risk' ? formatAmountRisk : formatAmountDisbursement
   const { dimensionHeaders, metricHeaders, rows } = data.dimensionMetrics
-  const allHeaders = [...dimensionHeaders, ...metricHeaders]
+  const [selectedDimensions, setSelectedDimensions] = useState<string[]>(() => [...dimensionHeaders])
+  const [selectedMetrics, setSelectedMetrics] = useState<string[]>(() => [...metricHeaders])
+  const [dimDropdownOpen, setDimDropdownOpen] = useState(false)
+  const [metricDropdownOpen, setMetricDropdownOpen] = useState(false)
+  const dropdownsRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownsRef.current && !dropdownsRef.current.contains(e.target as Node)) {
+        setDimDropdownOpen(false)
+        setMetricDropdownOpen(false)
+      }
+    }
+    document.addEventListener('click', handleClickOutside)
+    return () => document.removeEventListener('click', handleClickOutside)
+  }, [])
+
+  const visibleHeaders = useMemo(
+    () => [...selectedDimensions, ...selectedMetrics],
+    [selectedDimensions, selectedMetrics]
+  )
+
+  const toggleDimension = (dim: string) => {
+    setSelectedDimensions((prev) =>
+      prev.includes(dim) ? prev.filter((d) => d !== dim) : [...prev, dim]
+    )
+  }
+  const toggleMetric = (met: string) => {
+    setSelectedMetrics((prev) =>
+      prev.includes(met) ? prev.filter((m) => m !== met) : [...prev, met]
+    )
+  }
+  const selectAllDimensions = () => setSelectedDimensions([...dimensionHeaders])
+  const deselectAllDimensions = () => setSelectedDimensions([])
+  const selectAllMetrics = () => setSelectedMetrics([...metricHeaders])
+  const deselectAllMetrics = () => setSelectedMetrics([])
 
   return (
     <section className={styles.section}>
@@ -65,11 +101,15 @@ export function ProductWiseSection({
             <tbody>
               {data.monthYearTable.rows.map((row, i) => (
                 <tr key={i}>
-                  {data.monthYearTable.headers.map((key) => (
-                    <td key={key}>
-                      {typeof row[key] === 'number' ? (row[key] as number).toLocaleString() : String(row[key])}
-                    </td>
-                  ))}
+                  {data.monthYearTable.headers.map((key) => {
+                    const cellKey = key === 'Month-Year' ? 'monthYear' : key
+                    const val = row[cellKey]
+                    return (
+                      <td key={key}>
+                        {typeof val === 'number' ? (val as number).toLocaleString() : String(val ?? '')}
+                      </td>
+                    )
+                  })}
                 </tr>
               ))}
             </tbody>
@@ -108,34 +148,93 @@ export function ProductWiseSection({
         </div>
       </div>
 
-      {/* 4. Dimension × metrics table */}
+      {/* 4. Dimension × metrics table with dropdown filters */}
       <div className={styles.block}>
         <h3 className={styles.blockTitle}>By dimensions & metrics</h3>
-        <p className={styles.hint}>
-          Dimensions: {dimensionHeaders.join(', ')}. Metrics: {metricHeaders.join(', ')}.
-        </p>
-        <div className={styles.tableWrap}>
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                {allHeaders.map((h) => (
-                  <th key={h}>{h}</th>
+        <div className={styles.dimMetricDropdowns} ref={dropdownsRef}>
+          <div className={styles.dropdownWrap}>
+            <button
+              type="button"
+              className={styles.dropdownTrigger}
+              onClick={(e) => { e.stopPropagation(); setDimDropdownOpen((o) => !o); setMetricDropdownOpen(false) }}
+              aria-expanded={dimDropdownOpen}
+            >
+              Dimensions ({selectedDimensions.length}) ▼
+            </button>
+            {dimDropdownOpen && (
+              <div className={styles.dropdownPanel} role="listbox">
+                <div className={styles.dropdownActions}>
+                  <button type="button" className={styles.dropdownActionBtn} onClick={selectAllDimensions}>Select all</button>
+                  <button type="button" className={styles.dropdownActionBtn} onClick={deselectAllDimensions}>Deselect all</button>
+                </div>
+                {dimensionHeaders.map((dim) => (
+                  <label key={dim} className={styles.dropdownOption}>
+                    <input
+                      type="checkbox"
+                      checked={selectedDimensions.includes(dim)}
+                      onChange={() => toggleDimension(dim)}
+                    />
+                    <span>{dim}</span>
+                  </label>
                 ))}
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((row, i) => (
-                <tr key={i}>
-                  {allHeaders.map((key) => (
-                    <td key={key}>
-                      {typeof row[key] === 'number' ? (row[key] as number).toLocaleString() : String(row[key] ?? '')}
-                    </td>
+              </div>
+            )}
+          </div>
+          <div className={styles.dropdownWrap}>
+            <button
+              type="button"
+              className={styles.dropdownTrigger}
+              onClick={(e) => { e.stopPropagation(); setMetricDropdownOpen((o) => !o); setDimDropdownOpen(false) }}
+              aria-expanded={metricDropdownOpen}
+            >
+              Metrics ({selectedMetrics.length}) ▼
+            </button>
+            {metricDropdownOpen && (
+              <div className={styles.dropdownPanel} role="listbox">
+                <div className={styles.dropdownActions}>
+                  <button type="button" className={styles.dropdownActionBtn} onClick={selectAllMetrics}>Select all</button>
+                  <button type="button" className={styles.dropdownActionBtn} onClick={deselectAllMetrics}>Deselect all</button>
+                </div>
+                {metricHeaders.map((met) => (
+                  <label key={met} className={styles.dropdownOption}>
+                    <input
+                      type="checkbox"
+                      checked={selectedMetrics.includes(met)}
+                      onChange={() => toggleMetric(met)}
+                    />
+                    <span>{met}</span>
+                  </label>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+        {visibleHeaders.length === 0 ? (
+          <p className={styles.hint}>Select at least one dimension or metric above to show the table.</p>
+        ) : (
+          <div className={styles.tableWrap}>
+            <table className={styles.table}>
+              <thead>
+                <tr>
+                  {visibleHeaders.map((h) => (
+                    <th key={h}>{h}</th>
                   ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {rows.map((row, i) => (
+                  <tr key={i}>
+                    {visibleHeaders.map((key) => (
+                      <td key={key}>
+                        {typeof row[key] === 'number' ? (row[key] as number).toLocaleString() : String(row[key] ?? '')}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </section>
   )
