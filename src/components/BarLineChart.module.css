@@ -26,13 +26,12 @@
 .legendLine::before {
   content: '';
   display: inline-block;
-  width: 16px;
-  height: 2px;
+  width: 18px;
+  height: 3px;
   margin-right: 0.35rem;
   vertical-align: middle;
-  background: var(--accent);
-  border-radius: 1px;
-  box-shadow: 0 0 0 1px var(--accent);
+  background: #c2410c;
+  border-radius: 2px;
 }
 
 .chartArea {
@@ -88,15 +87,15 @@
 
 .line {
   fill: none;
-  stroke: var(--accent);
-  stroke-width: 2;
+  stroke: #c2410c;
+  stroke-width: 2.5;
   stroke-linecap: round;
   stroke-linejoin: round;
   vector-effect: non-scaling-stroke;
 }
 
 .linePoint {
-  fill: var(--accent);
+  fill: #c2410c;
   stroke: var(--bg-card);
   stroke-width: 1;
 }

@@ -1,13 +1,12 @@
 import type { BarLinePoint } from '../data/productWiseReportData'
 import styles from './BarLineChart.module.css'
 
+const LINE_COLOR = '#c2410c'
+
 interface BarLineChartProps {
   data: BarLinePoint[]
-  /** Label for bar (e.g. "Loan count") */
   barLabel: string
-  /** Label for line (e.g. "Loan amount (₹ L)") */
   lineLabel: string
-  /** Format amount for display (e.g. to Lakhs) */
   formatAmount?: (n: number) => string
 }
 
@@ -29,7 +28,7 @@ export function BarLineChart({ data, barLabel, lineLabel, formatAmount = (n) => 
     <div className={styles.wrapper}>
       <div className={styles.legend}>
         <span className={styles.legendBar}>{barLabel}</span>
-        <span className={styles.legendLine}>{lineLabel}</span>
+        <span className={styles.legendLine} style={{ color: LINE_COLOR }}>{lineLabel}</span>
       </div>
       <div className={styles.chartArea}>
         <div className={styles.bars}>
@@ -43,20 +42,20 @@ export function BarLineChart({ data, barLabel, lineLabel, formatAmount = (n) => 
             </div>
           ))}
         </div>
-        <svg className={styles.lineChart} viewBox="0 0 100 100" preserveAspectRatio="none">
-          <polyline className={styles.line} points={points} />
+        <svg className={styles.lineChart} viewBox="0 0 100 100" preserveAspectRatio="none" style={{ zIndex: 2 }}>
+          <polyline className={styles.line} points={points} stroke={LINE_COLOR} strokeWidth={2.5} />
           {data.map((d, i) => {
             const x = (i + 0.5) * (100 / data.length)
             const y = 100 - (d.amount / maxAmount) * 100
-            return <circle key={d.monthYear} className={styles.linePoint} cx={x} cy={y} r="2" />
+            return (
+              <circle key={d.monthYear} className={styles.linePoint} cx={x} cy={y} r="3" fill={LINE_COLOR} stroke="var(--bg-card)" strokeWidth={1} />
+            )
           })}
         </svg>
       </div>
       <div className={styles.xAxis}>
         {data.map((d) => (
-          <span key={d.monthYear} className={styles.tick}>
-            {d.monthYear}
-          </span>
+          <span key={d.monthYear} className={styles.tick}>{d.monthYear}</span>
         ))}
       </div>
       <div className={styles.yAxisLabels}>

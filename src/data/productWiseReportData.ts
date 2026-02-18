@@ -37,14 +37,19 @@ export const DISBURSEMENT_PRODUCT_TYPES = ['3 Month', '6 Month', '9 Month'] as c
 
 function disbursementBarLine(product: string): BarLinePoint[] {
   const base = product === '3 Month' ? [120, 135, 142, 138, 145, 152] : product === '6 Month' ? [95, 102, 108, 98, 105, 112] : [72, 78, 82, 75, 80, 85]
-  const amountBase = product === '3 Month' ? 2.2 : product === '6 Month' ? 2.8 : 2.6
+  // Strong up-down so line weaves between bars: low, high, low, high, low, high
+  const amountsL = product === '3 Month'
+    ? [24, 31, 26, 30, 25, 33]
+    : product === '6 Month'
+      ? [22, 28, 24, 27, 23, 29]
+      : [20, 26, 22, 25, 21, 27]
   return [
-    { monthYear: 'Aug-24', count: base[0], amount: base[0] * amountBase * 10000 },
-    { monthYear: 'Sep-24', count: base[1], amount: base[1] * amountBase * 10000 },
-    { monthYear: 'Oct-24', count: base[2], amount: base[2] * amountBase * 10000 },
-    { monthYear: 'Nov-24', count: base[3], amount: base[3] * amountBase * 10000 },
-    { monthYear: 'Dec-24', count: base[4], amount: base[4] * amountBase * 10000 },
-    { monthYear: 'Jan-25', count: base[5], amount: base[5] * amountBase * 10000 },
+    { monthYear: 'Aug-24', count: base[0], amount: amountsL[0] * 100000 },
+    { monthYear: 'Sep-24', count: base[1], amount: amountsL[1] * 100000 },
+    { monthYear: 'Oct-24', count: base[2], amount: amountsL[2] * 100000 },
+    { monthYear: 'Nov-24', count: base[3], amount: amountsL[3] * 100000 },
+    { monthYear: 'Dec-24', count: base[4], amount: amountsL[4] * 100000 },
+    { monthYear: 'Jan-25', count: base[5], amount: amountsL[5] * 100000 },
   ]
 }
 
@@ -121,7 +126,12 @@ export const COLLECTION_PRODUCT_TYPES = ['3 Month', '6 Month', '9 Month'] as con
 
 function collectionBarLine(product: string): BarLinePoint[] {
   const counts = product === '3 Month' ? [118, 125, 130, 128, 132, 138] : product === '6 Month' ? [92, 98, 102, 96, 100, 105] : [68, 74, 78, 72, 76, 82]
-  const amounts = product === '3 Month' ? [25.2, 26.8, 27.9, 27.4, 28.5, 29.8] : product === '6 Month' ? [22.1, 23.5, 24.4, 23.0, 24.0, 25.2] : [19.2, 20.8, 21.8, 20.2, 21.4, 22.6]
+  // Up-down so line weaves: low, high, low, high, low, high
+  const amounts = product === '3 Month'
+    ? [24, 29, 25, 28, 24, 30]
+    : product === '6 Month'
+      ? [21, 26, 22, 25, 21, 27]
+      : [18, 23, 19, 22, 18, 24]
   return counts.map((count, i) => ({ monthYear: ['Aug-24', 'Sep-24', 'Oct-24', 'Nov-24', 'Dec-24', 'Jan-25'][i], count, amount: amounts[i] * 100000 }))
 }
 
@@ -181,7 +191,12 @@ export const RISK_PRODUCT_TYPES = ['3 Month', '6 Month', '9 Month'] as const
 
 function riskBarLine(product: string): BarLinePoint[] {
   const counts = product === '3 Month' ? [3, 4, 2, 3, 2, 3] : product === '6 Month' ? [5, 6, 5, 4, 5, 6] : [4, 5, 4, 5, 4, 5]
-  const amounts = product === '3 Month' ? [0.66, 0.88, 0.44, 0.66, 0.44, 0.66] : product === '6 Month' ? [0.58, 0.70, 0.58, 0.46, 0.58, 0.70] : [0.28, 0.35, 0.28, 0.35, 0.28, 0.35]
+  // NPA amount (₹ L) up-down so line weaves between bars
+  const amounts = product === '3 Month'
+    ? [0.45, 0.82, 0.50, 0.78, 0.48, 0.85]
+    : product === '6 Month'
+      ? [0.48, 0.72, 0.52, 0.68, 0.50, 0.75]
+      : [0.22, 0.38, 0.24, 0.34, 0.22, 0.36]
   return counts.map((count, i) => ({ monthYear: ['Aug-24', 'Sep-24', 'Oct-24', 'Nov-24', 'Dec-24', 'Jan-25'][i], count, amount: amounts[i] * 1000000 }))
 }
 

@@ -15,3 +15,71 @@
   color: var(--text-secondary);
   margin: 0 0 1.5rem;
 }
+
+/* Accordion: product type dropdown – header always visible, body expands/collapses */
+.accordionList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.accordionItem {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.accordionHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.85rem 1rem;
+  border: none;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.accordionHeader:hover {
+  background: var(--bg-hover);
+}
+
+.accordionArrow {
+  font-size: 0.65rem;
+  color: var(--accent);
+  transition: transform 0.25s ease;
+  display: inline-block;
+}
+
+.accordionHeaderOpen .accordionArrow {
+  transform: rotate(180deg);
+}
+
+.accordionTitle {
+  flex: 1;
+  font-weight: 700;
+}
+
+.accordionHint {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--accent);
+}
+
+.accordionBody {
+  border-top: 1px solid var(--border);
+}
+
+.accordionBody[hidden] {
+  display: none;
+}
+
+.accordionBodyOpen {
+  display: block;
+}
