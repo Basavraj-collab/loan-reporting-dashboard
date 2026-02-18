@@ -2,11 +2,16 @@ import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { getReportsBySubSegment } from '../data/reports-new'
 import { MetricCard } from './MetricCard'
+import { BankingReportsView } from './BankingReportsView'
 import styles from './BusinessDashboard.module.css'
 
 export function BusinessDashboard() {
   const { segmentId, subSegmentId } = useParams<{ segmentId: string; subSegmentId: string }>()
   const reports = segmentId && subSegmentId ? getReportsBySubSegment(segmentId, subSegmentId) : []
+
+  if (segmentId === 'banking-hygiene' && subSegmentId === 'banking-reports') {
+    return <BankingReportsView />
+  }
 
   if (segmentId === 'business-dashboard') {
     if (subSegmentId === 'business-health') {

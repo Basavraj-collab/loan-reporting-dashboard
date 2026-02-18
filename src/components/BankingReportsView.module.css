@@ -1,0 +1,341 @@
+.wrapper {
+  max-width: 1000px;
+  padding-bottom: 2rem;
+}
+
+.pageTitle {
+  font-size: 1.35rem;
+  font-weight: 700;
+  margin: 0 0 1rem;
+  color: var(--text-primary);
+}
+
+/* Top navigation: Balance Sheet > Profit & Loss > Trial Balance */
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.5rem;
+  margin-bottom: 1.25rem;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.breadcrumbLink {
+  background: none;
+  border: none;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 0;
+}
+
+.breadcrumbLink:hover {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+.breadcrumbActive {
+  background: none;
+  border: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--accent);
+  cursor: default;
+  padding: 0;
+}
+
+.breadcrumbSep {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  user-select: none;
+}
+
+.section {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.reportHeading {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem;
+  color: var(--text-primary);
+}
+
+.hint {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin: 0 0 1rem;
+}
+
+.bsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+@media (max-width: 700px) {
+  .bsGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.bsColumn {
+  min-width: 0;
+}
+
+.bsSubHead {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem;
+  color: var(--text-secondary);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.table th,
+.table td {
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  border: 1px solid var(--border);
+}
+
+.table th {
+  background: var(--bg-secondary);
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.table td {
+  background: var(--bg-card);
+  color: var(--text-primary);
+}
+
+.table .amount {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.indent {
+  padding-left: 1.5rem;
+}
+
+.totalRow {
+  font-weight: 700;
+  background: var(--bg-secondary) !important;
+}
+
+.subTotal {
+  font-weight: 600;
+  background: var(--bg-hover) !important;
+}
+
+.plGroup {
+  font-weight: 600;
+  color: var(--text-secondary);
+  padding-top: 0.75rem;
+}
+
+.linkLike {
+  background: none;
+  border: none;
+  color: var(--accent);
+  cursor: pointer;
+  font-size: inherit;
+  padding: 0;
+  text-decoration: underline;
+}
+
+.linkLike:hover {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.tableWrap {
+  overflow-x: auto;
+}
+
+.clickableRow {
+  cursor: pointer;
+}
+
+.clickableRow:hover td {
+  background: var(--bg-hover);
+}
+
+.backButton {
+  font-size: 0.85rem;
+  padding: 0.4rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.backButton:hover {
+  background: var(--bg-hover);
+  border-color: var(--accent);
+}
+
+.nextSection {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+
+.nextButton {
+  font-size: 0.95rem;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--accent);
+  background: var(--accent-muted);
+  color: var(--accent);
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.nextButton:hover {
+  background: var(--accent);
+  color: var(--bg-card);
+}
+
+/* Ledger / Journal modal */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  max-width: 720px;
+  width: 92%;
+  max-height: 88vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.modalActions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.downloadBtn {
+  font-size: 0.85rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.downloadBtn:hover {
+  background: var(--accent-muted);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.modalTitle {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+
+.closeBtn:hover {
+  color: var(--text-primary);
+}
+
+.modalBody {
+  padding: 1rem 1.25rem;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+}
+
+.popupTableWrap {
+  overflow-x: auto;
+  margin-bottom: 0.5rem;
+}
+
+.modalBody p {
+  margin: 0 0 0.75rem;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+}
+
+.narration {
+  font-style: italic;
+  color: var(--text-secondary);
+  margin-bottom: 1rem !important;
+}
+
+.modalBody .table {
+  margin-top: 0.5rem;
+}
+
+.journalInPopup {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+
+.journalHeading {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem;
+  color: var(--text-primary);
+}
