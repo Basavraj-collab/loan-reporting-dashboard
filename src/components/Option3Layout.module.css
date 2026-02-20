@@ -10,9 +10,12 @@
   flex-wrap: wrap;
   gap: 0.75rem;
   padding: 0.6rem 1.25rem;
-  background: var(--bg-card);
-  border-bottom: 1px solid var(--border);
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border-bottom: 1px solid var(--glass-border);
   flex-shrink: 0;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.15);
 }
 
 .logo {
@@ -39,15 +42,17 @@
 .pinnedBtn {
   padding: 0.35rem 0.6rem;
   font-size: 0.85rem;
-  border: 1px solid var(--border);
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius);
-  background: var(--bg-secondary);
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
   color: var(--text-primary);
   cursor: pointer;
 }
 
 .pinnedBtn:hover {
-  border-color: var(--accent);
+  border-color: var(--glass-border-accent);
   color: var(--accent);
 }
 
@@ -64,8 +69,10 @@
 .breadcrumbSelect {
   padding: 0.35rem 0.6rem;
   font-size: 0.85rem;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border);
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius);
   color: var(--text-primary);
   cursor: pointer;
@@ -92,8 +99,10 @@
   width: 200px;
   flex-shrink: 0;
   padding: 1rem;
-  background: var(--bg-secondary);
-  border-right: 1px solid var(--border);
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border-right: 1px solid var(--glass-border);
 }
 
 .subNavTitle {
@@ -122,12 +131,12 @@
 }
 
 .subNavLink:hover {
-  background: var(--bg-hover);
+  background: rgba(255, 255, 255, 0.05);
   color: var(--text-primary);
 }
 
 .subNavActive {
-  background: var(--accent-muted);
+  background: rgba(13, 148, 136, 0.12);
   color: var(--accent);
   font-weight: 600;
 }
@@ -136,4 +145,13 @@
   flex: 1;
   overflow: auto;
   padding: 1.5rem 2rem;
+}
+
+.dateBar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--glass-border);
 }

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { SidebarNav } from './SidebarNav'
+import { DateRangeSelector } from './DateRangeSelector'
 import styles from './Layout.module.css'
 
 const LOAN_PRODUCTS = ['Loan product 1', 'Loan product 2', 'Loan product 3']
@@ -42,6 +43,9 @@ export function Layout({ children }: LayoutProps) {
               </select>
             </div>
           </div>
+        </div>
+        <div className={styles.dateRow}>
+          <DateRangeSelector />
         </div>
         <div className={styles.content}>{children}</div>
       </main>

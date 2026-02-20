@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { segments } from '../data/navigation'
+import { DateRangeSelector } from './DateRangeSelector'
 import styles from './Option2Layout.module.css'
 
 interface Option2LayoutProps {
@@ -61,7 +62,12 @@ export function Option2Layout({ children }: Option2LayoutProps) {
           </div>
         </nav>
       </header>
-      <main className={styles.main}>{children}</main>
+      <main className={styles.main}>
+        <div className={styles.dateBar}>
+          <DateRangeSelector />
+        </div>
+        {children}
+      </main>
     </div>
   )
 }

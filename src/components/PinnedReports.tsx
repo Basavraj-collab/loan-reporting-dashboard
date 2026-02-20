@@ -1,4 +1,3 @@
-import { Link } from 'react-router-dom'
 import { getReportById } from '../data/reports-new'
 import styles from './PinnedReports.module.css'
 
@@ -27,18 +26,13 @@ export function PinnedReports() {
 
       <div className={styles.grid}>
         {pinnedReports.map((report) => (
-          <Link
-            to={`/segment/${report!.segmentId}/${report!.subSegmentId}`}
-            key={report!.id}
-            className={styles.card}
-          >
+          <div key={report!.id} className={styles.card}>
             <h2 className={styles.cardTitle}>{report!.title}</h2>
             <p className={styles.cardDesc}>{report!.description}</p>
             <span className={styles.cardMeta}>
               Segment: {report!.segmentId} / {report!.subSegmentId}
             </span>
-            <span className={styles.cardArrow}>View →</span>
-          </Link>
+          </div>
         ))}
       </div>
     </div>

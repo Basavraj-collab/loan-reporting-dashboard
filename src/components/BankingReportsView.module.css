@@ -18,7 +18,7 @@
   gap: 0.35rem 0.5rem;
   margin-bottom: 1.25rem;
   padding: 0.6rem 0;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--glass-border);
 }
 
 .breadcrumbLink {
@@ -52,11 +52,14 @@
 }
 
 .section {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius);
   padding: 1.5rem;
   margin-bottom: 1.5rem;
+  box-shadow: var(--glass-shadow);
 }
 
 .sectionHeader {
@@ -114,11 +117,11 @@
 .table td {
   padding: 0.5rem 0.75rem;
   text-align: left;
-  border: 1px solid var(--border);
+  border: 1px solid var(--glass-border);
 }
 
 .table th {
-  background: var(--bg-secondary);
+  background: var(--glass-bg);
   color: var(--text-muted);
   font-weight: 600;
   font-size: 0.8rem;
@@ -127,7 +130,7 @@
 }
 
 .table td {
-  background: var(--bg-card);
+  background: rgba(30, 42, 58, 0.25);
   color: var(--text-primary);
 }
 
@@ -142,12 +145,12 @@
 
 .totalRow {
   font-weight: 700;
-  background: var(--bg-secondary) !important;
+  background: var(--glass-bg) !important;
 }
 
 .subTotal {
   font-weight: 600;
-  background: var(--bg-hover) !important;
+  background: rgba(255, 255, 255, 0.05) !important;
 }
 
 .plGroup {
@@ -180,15 +183,17 @@
 }
 
 .clickableRow:hover td {
-  background: var(--bg-hover);
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .backButton {
   font-size: 0.85rem;
   padding: 0.4rem 0.75rem;
-  border: 1px solid var(--border);
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius);
-  background: var(--bg-secondary);
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
   color: var(--text-primary);
   cursor: pointer;
 }

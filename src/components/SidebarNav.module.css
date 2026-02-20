@@ -17,12 +17,12 @@
 
 .pinned:hover {
   color: var(--text-primary);
-  background: var(--bg-hover);
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .pinnedActive {
   color: var(--accent);
-  background: var(--accent-muted);
+  background: rgba(13, 148, 136, 0.12);
   border-right: 3px solid var(--accent);
 }
 
@@ -61,7 +61,7 @@
 
 .segmentHeader:hover {
   color: var(--text-primary);
-  background: var(--bg-hover);
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .segmentName {
@@ -92,11 +92,11 @@
 
 .subSegment:hover {
   color: var(--text-primary);
-  background: var(--bg-hover);
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .subSegmentActive {
   color: var(--accent);
-  background: var(--accent-muted);
+  background: rgba(13, 148, 136, 0.12);
   border-right: 3px solid var(--accent);
 }

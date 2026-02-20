@@ -24,10 +24,13 @@
 }
 
 .accordionItem {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius);
   overflow: hidden;
+  box-shadow: var(--glass-shadow);
 }
 
 .accordionHeader {
@@ -37,7 +40,7 @@
   width: 100%;
   padding: 0.85rem 1rem;
   border: none;
-  background: var(--bg-secondary);
+  background: rgba(255, 255, 255, 0.03);
   color: var(--text-primary);
   font-size: 1rem;
   font-weight: 600;
@@ -47,7 +50,7 @@
 }
 
 .accordionHeader:hover {
-  background: var(--bg-hover);
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .accordionArrow {
@@ -73,7 +76,7 @@
 }
 
 .accordionBody {
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--glass-border);
 }
 
 .accordionBody[hidden] {
