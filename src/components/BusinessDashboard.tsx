@@ -22,6 +22,9 @@ export function BusinessDashboard() {
   if (segmentId === 'disbursement' && subSegmentId === 'loan-product-analysis') {
     return <ProductWiseDisbursementView />
   }
+  if (segmentId === 'disbursement' && subSegmentId === 'impact-analysis') {
+    return <ImpactAnalysisView />
+  }
   if (segmentId === 'repayment' && subSegmentId === 'collection-analysis') {
     return <ProductWiseCollectionView />
   }
@@ -347,6 +350,166 @@ function AudienceOverviewView({ reports }: { reports: AnyReport[] }) {
             </Link>
           </div>
         </section>
+      </div>
+    </div>
+  )
+}
+
+/** Raw data for Impact Analysis popup (columns, download, close) */
+const IMPACT_ANALYSIS_RAW_DATA: { headers: string[]; rows: (string | number)[][] } = {
+  headers: [
+    'Loan ID',
+    'Product',
+    'Region',
+    'Age',
+    'Occupation',
+    'Repeat user',
+    'Disbursement amount',
+    'Disbursement date',
+    'Resurrected',
+  ],
+  rows: [
+    ['IA-10001', '3 Month', 'North', '28', 'Salaried', 'Yes', 221000, '2025-01-05', 'No'],
+    ['IA-10002', '6 Month', 'South', '35', 'Self Employed', 'Yes', 254000, '2025-01-08', 'No'],
+    ['IA-10003', '9 Month', 'East', '42', 'Business', 'Yes', 261000, '2025-01-12', 'Yes'],
+    ['IA-10004', '3 Month', 'West', '31', 'Salaried', 'No', 198000, '2025-01-15', 'No'],
+    ['IA-10005', '6 Month', 'North', '39', 'Salaried', 'Yes', 248000, '2025-01-18', 'No'],
+    ['IA-10006', '9 Month', 'South', '45', 'Business', 'Yes', 272000, '2025-01-22', 'No'],
+  ],
+}
+
+type ImpactSectionRow = { dimensionValue: string; repeatUsers: string; numLoans: string; avgLoanSize: string }
+
+const IMPACT_SECTIONS: { title: string; dimensionHeader: string; rows: ImpactSectionRow[] }[] = [
+  {
+    title: 'Product type',
+    dimensionHeader: 'Product',
+    rows: [
+      { dimensionValue: '3 Month', repeatUsers: '520', numLoans: '1,240', avgLoanSize: '$22,100' },
+      { dimensionValue: '6 Month', repeatUsers: '680', numLoans: '1,580', avgLoanSize: '$25,400' },
+      { dimensionValue: '9 Month', repeatUsers: '650', numLoans: '1,520', avgLoanSize: '$26,100' },
+    ],
+  },
+  {
+    title: 'Region',
+    dimensionHeader: 'Region',
+    rows: [
+      { dimensionValue: 'North', repeatUsers: '680', numLoans: '1,620', avgLoanSize: '$24,200' },
+      { dimensionValue: 'South', repeatUsers: '520', numLoans: '1,380', avgLoanSize: '$23,800' },
+      { dimensionValue: 'East', repeatUsers: '420', numLoans: '1,100', avgLoanSize: '$24,900' },
+      { dimensionValue: 'West', repeatUsers: '230', numLoans: '640', avgLoanSize: '$23,100' },
+    ],
+  },
+  {
+    title: 'Age',
+    dimensionHeader: 'Age',
+    rows: [
+      { dimensionValue: '20–30', repeatUsers: '320', numLoans: '880', avgLoanSize: '$21,500' },
+      { dimensionValue: '30–40', repeatUsers: '580', numLoans: '1,420', avgLoanSize: '$24,800' },
+      { dimensionValue: '40–50', repeatUsers: '480', numLoans: '1,180', avgLoanSize: '$25,200' },
+      { dimensionValue: '50+', repeatUsers: '470', numLoans: '1,120', avgLoanSize: '$26,400' },
+    ],
+  },
+  {
+    title: 'Occupation',
+    dimensionHeader: 'Occupation',
+    rows: [
+      { dimensionValue: 'Salaried', repeatUsers: '720', numLoans: '1,840', avgLoanSize: '$24,100' },
+      { dimensionValue: 'Self Employed', repeatUsers: '380', numLoans: '920', avgLoanSize: '$25,600' },
+      { dimensionValue: 'Business', repeatUsers: '420', numLoans: '980', avgLoanSize: '$26,200' },
+      { dimensionValue: 'Student', repeatUsers: '330', numLoans: '760', avgLoanSize: '$20,800' },
+    ],
+  },
+]
+
+function ImpactAnalysisView() {
+  const [popup, setPopup] = useState<{ title: string } | null>(null)
+
+  const openPopup = (title: string) => setPopup({ title })
+  const closePopup = () => setPopup(null)
+
+  return (
+    <div className={styles.wrapper}>
+      <div className={styles.impactAnalysis}>
+        <section className={styles.section}>
+          <div className={styles.sectionHeader}>
+            <h2 className={styles.sectionTitle}>Impact analysis – overview</h2>
+          </div>
+          <div className={styles.impactOverallMetrics}>
+            <div className={styles.impactMetricCard}>
+              <span className={styles.impactMetricLabel}>Repeat users</span>
+              <span className={styles.impactMetricValue}>1,850</span>
+            </div>
+            <div className={styles.impactMetricCard}>
+              <span className={styles.impactMetricLabel}>Avg loan size</span>
+              <span className={styles.impactMetricValue}>$24,500</span>
+            </div>
+            <div className={styles.impactMetricCard}>
+              <span className={styles.impactMetricLabel}>Resurrected users</span>
+              <span className={styles.impactMetricValue}>312</span>
+            </div>
+          </div>
+        </section>
+
+        {IMPACT_SECTIONS.map((section, sectionIdx) => (
+          <section key={sectionIdx} className={styles.section}>
+            <h3 className={styles.impactSectionHeading}>{section.title}</h3>
+            <div className={styles.tableSection}>
+              <table className={styles.table}>
+                <thead>
+                  <tr>
+                    <th>{section.dimensionHeader}</th>
+                    <th>Repeat users</th>
+                    <th># of loans taken</th>
+                    <th>Avg loan size</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {section.rows.map((row, rowIdx) => (
+                    <tr key={rowIdx}>
+                      <td className={styles.impactDimensionCell}>{row.dimensionValue}</td>
+                      <td>
+                        <button
+                          type="button"
+                          className={styles.impactValueBtn}
+                          onClick={() => openPopup(`${section.title} – Repeat users – ${row.dimensionValue}`)}
+                        >
+                          {row.repeatUsers}
+                        </button>
+                      </td>
+                      <td>
+                        <button
+                          type="button"
+                          className={styles.impactValueBtn}
+                          onClick={() => openPopup(`${section.title} – # of loans taken – ${row.dimensionValue}`)}
+                        >
+                          {row.numLoans}
+                        </button>
+                      </td>
+                      <td>
+                        <button
+                          type="button"
+                          className={styles.impactValueBtn}
+                          onClick={() => openPopup(`${section.title} – Avg loan size – ${row.dimensionValue}`)}
+                        >
+                          {row.avgLoanSize}
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        ))}
+
+        {popup && (
+          <DataPopup
+            title={popup.title}
+            data={IMPACT_ANALYSIS_RAW_DATA}
+            onClose={closePopup}
+          />
+        )}
       </div>
     </div>
   )

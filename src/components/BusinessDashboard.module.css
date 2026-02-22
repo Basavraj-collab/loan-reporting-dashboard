@@ -258,3 +258,70 @@
 .table tbody tr:hover td {
   background: rgba(255, 255, 255, 0.04);
 }
+
+/* Impact Analysis (Disbursement > Impact analysis) */
+.impactAnalysis {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.impactOverallMetrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+}
+
+.impactMetricCard {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 1rem 1.5rem;
+  background: rgba(15, 22, 32, 0.5);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  min-width: 140px;
+}
+
+.impactMetricLabel {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+
+.impactMetricValue {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.impactSectionHeading {
+  margin: 0 0 1rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.impactDimensionCell {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.impactValueBtn {
+  padding: 0.25rem 0;
+  border: none;
+  background: none;
+  color: var(--accent);
+  font-size: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: left;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.impactValueBtn:hover {
+  color: var(--text-primary);
+}
