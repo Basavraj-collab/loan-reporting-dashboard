@@ -95,6 +95,96 @@
   gap: 1rem;
 }
 
+/* Performance distribution: one widget per metric–cohort with 2x2 matrix */
+.performanceWidgetsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+
+.performanceWidget {
+  background: rgba(15, 22, 32, 0.5);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  padding: 1rem 1.25rem;
+  min-width: 0;
+}
+
+.performanceWidgetTitle {
+  margin: 0 0 0.75rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 0.02em;
+}
+
+.performanceMatrix {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.performanceMatrix thead tr {
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.performanceMatrix tbody tr {
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.performanceMatrix tbody tr:last-child {
+  border-bottom: none;
+}
+
+.performanceMatrixTh {
+  padding: 0.5rem 0.75rem 0.5rem 0;
+  text-align: left;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+
+.performanceMatrixLabel {
+  padding: 0.5rem 0.75rem 0.5rem 0;
+  color: var(--text-secondary);
+  font-weight: 500;
+  width: 1%;
+  white-space: nowrap;
+  vertical-align: top;
+}
+
+.performanceMatrixValue {
+  padding: 0.5rem 0;
+  vertical-align: top;
+}
+
+.performanceMatrixValueBtn {
+  display: inline-block;
+  padding: 0.25rem 0;
+  border: none;
+  background: none;
+  color: var(--accent);
+  font-weight: 600;
+  font-size: inherit;
+  cursor: pointer;
+  text-align: left;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.performanceMatrixValueBtn:hover {
+  color: var(--text-primary);
+}
+
+.performanceMatrixPct {
+  padding: 0.5rem 0 0.5rem 0.75rem;
+  color: var(--text-primary);
+  font-weight: 500;
+  vertical-align: top;
+}
+
 .reportsGrid {
   display: flex;
   flex-direction: column;

@@ -25,7 +25,12 @@
   font-weight: 700;
   font-size: 1.1rem;
   color: var(--text-primary);
-  margin-right: 1rem;
+  margin-right: 0.5rem;
+  cursor: pointer;
+}
+
+.logo:hover {
+  opacity: 0.9;
 }
 
 .logoIcon {
@@ -33,16 +38,58 @@
   font-size: 1.3rem;
 }
 
-.nav {
+.searchWrap {
+  flex: 1;
+  min-width: 200px;
+  max-width: 480px;
+}
+
+.actions {
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 1rem;
-  flex: 1;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.homeBtn {
+  padding: 0.5rem 0.85rem;
+  font-size: 0.9rem;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.homeBtn:hover {
+  background: rgba(13, 148, 136, 0.15);
+  border-color: var(--glass-border-accent);
+  color: var(--accent);
+}
+
+.browseBtn {
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.browseBtn:hover {
+  background: rgba(13, 148, 136, 0.15);
+  border-color: var(--glass-border-accent);
+  color: var(--accent);
 }
 
 .pinnedBtn {
-  padding: 0.45rem 0.75rem;
+  padding: 0.5rem 0.85rem;
   font-size: 0.9rem;
   border: 1px solid var(--glass-border);
   border-radius: var(--radius);
@@ -58,39 +105,6 @@
   background: rgba(13, 148, 136, 0.15);
   border-color: var(--glass-border-accent);
   color: var(--accent);
-}
-
-.dropdownGroup {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.dropdownLabel {
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--text-muted);
-  font-weight: 600;
-}
-
-.select {
-  min-width: 200px;
-  padding: 0.45rem 0.75rem;
-  font-size: 0.9rem;
-  background: var(--glass-bg);
-  backdrop-filter: blur(var(--glass-blur));
-  -webkit-backdrop-filter: blur(var(--glass-blur));
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius);
-  color: var(--text-primary);
-  cursor: pointer;
-}
-
-.select:hover,
-.select:focus {
-  border-color: var(--glass-border-accent);
-  outline: none;
 }
 
 .main {

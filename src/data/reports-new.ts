@@ -1,3 +1,12 @@
+/** Single widget for Performance distribution: metric + cohort with highest/lowest performer values and % contribution */
+export interface PerformanceWidget {
+  metricCohort: string
+  highestPerformer: string
+  lowestPerformer: string
+  highestContributionPct: string
+  lowestContributionPct: string
+}
+
 export interface Report {
   id: string
   title: string
@@ -7,6 +16,8 @@ export interface Report {
   metrics: { label: string; value: string; change?: string; trend?: 'up' | 'down'; clickable?: boolean; linkTo?: string }[]
   table?: { headers: string[]; rows: (string | number)[][] }
   rawData?: { headers: string[]; rows: (string | number)[][] } // For popup data
+  /** Used in Business Health > Performance distribution: one widget per metric-cohort with 2x2 matrix */
+  performanceWidgets?: PerformanceWidget[]
 }
 
 export const reports: Report[] = [
@@ -46,14 +57,24 @@ export const reports: Report[] = [
     description: 'High / low performing products, regions, and customer cohorts across key metrics.',
     segmentId: 'business-dashboard',
     subSegmentId: 'business-health',
-    metrics: [
-      { label: 'Disbursement – top product', value: 'Flexi Loan', clickable: true, linkTo: 'popup:disb-top-product' },
-      { label: 'Disbursement – low product', value: 'Education Loan', clickable: true, linkTo: 'popup:disb-low-product' },
-      { label: 'Disbursement – top region', value: 'North', clickable: true, linkTo: 'popup:disb-top-region' },
-      { label: 'NPA – high product', value: 'Personal Loan', clickable: true, linkTo: 'popup:npa-high-product' },
-      { label: 'Collection – low region', value: 'West', clickable: true, linkTo: 'popup:collection-low-region' },
-      { label: 'Yield – top customer age', value: '30–40', clickable: true, linkTo: 'popup:yield-top-age' },
-      { label: 'Yield – top occupation', value: 'Salaried', clickable: true, linkTo: 'popup:yield-top-occupation' },
+    metrics: [],
+    performanceWidgets: [
+      { metricCohort: 'Disbursement – Product type', highestPerformer: 'Flexi Loan ($2.1M)', lowestPerformer: 'Education Loan ($0.3M)', highestContributionPct: '24.5%', lowestContributionPct: '3.2%' },
+      { metricCohort: 'Disbursement – Region', highestPerformer: 'North ($5.2M)', lowestPerformer: 'West ($1.8M)', highestContributionPct: '31.2%', lowestContributionPct: '10.1%' },
+      { metricCohort: 'Disbursement – Age', highestPerformer: '30–40 ($4.1M)', lowestPerformer: '50+ ($1.2M)', highestContributionPct: '28.4%', lowestContributionPct: '7.8%' },
+      { metricCohort: 'Disbursement – Occupation', highestPerformer: 'Salaried ($6.0M)', lowestPerformer: 'Student ($0.9M)', highestContributionPct: '35.0%', lowestContributionPct: '5.2%' },
+      { metricCohort: 'NPA – Product type', highestPerformer: 'Personal Loan (2.1%)', lowestPerformer: 'Flexi Loan (0.4%)', highestContributionPct: '42.3%', lowestContributionPct: '8.1%' },
+      { metricCohort: 'NPA – Region', highestPerformer: 'South (1.8%)', lowestPerformer: 'North (0.7%)', highestContributionPct: '38.0%', lowestContributionPct: '14.2%' },
+      { metricCohort: 'NPA – Age', highestPerformer: '50+ (1.9%)', lowestPerformer: '30–40 (0.6%)', highestContributionPct: '40.1%', lowestContributionPct: '12.5%' },
+      { metricCohort: 'NPA – Occupation', highestPerformer: 'Self Employed (2.0%)', lowestPerformer: 'Salaried (0.5%)', highestContributionPct: '36.8%', lowestContributionPct: '9.4%' },
+      { metricCohort: 'Collection – Product type', highestPerformer: 'Flexi Loan (97.2%)', lowestPerformer: 'Education Loan (76.5%)', highestContributionPct: '26.8%', lowestContributionPct: '4.1%' },
+      { metricCohort: 'Collection – Region', highestPerformer: 'North (96.8%)', lowestPerformer: 'West (82.1%)', highestContributionPct: '29.5%', lowestContributionPct: '11.2%' },
+      { metricCohort: 'Collection – Age', highestPerformer: '30–40 (95.4%)', lowestPerformer: '50+ (88.2%)', highestContributionPct: '27.3%', lowestContributionPct: '8.9%' },
+      { metricCohort: 'Collection – Occupation', highestPerformer: 'Salaried (96.1%)', lowestPerformer: 'Student (79.3%)', highestContributionPct: '32.1%', lowestContributionPct: '6.2%' },
+      { metricCohort: 'Yield – Product type', highestPerformer: 'Flexi Loan (13.2%)', lowestPerformer: 'Education Loan (10.2%)', highestContributionPct: '25.4%', lowestContributionPct: '3.8%' },
+      { metricCohort: 'Yield – Region', highestPerformer: 'North (12.8%)', lowestPerformer: 'West (11.1%)', highestContributionPct: '28.0%', lowestContributionPct: '9.5%' },
+      { metricCohort: 'Yield – Age', highestPerformer: '30–40 (13.0%)', lowestPerformer: '50+ (11.4%)', highestContributionPct: '26.2%', lowestContributionPct: '7.1%' },
+      { metricCohort: 'Yield – Occupation', highestPerformer: 'Salaried (12.9%)', lowestPerformer: 'Student (10.5%)', highestContributionPct: '30.2%', lowestContributionPct: '5.4%' },
     ],
     rawData: {
       headers: [

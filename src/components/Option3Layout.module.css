@@ -25,11 +25,51 @@
   font-weight: 700;
   font-size: 1.05rem;
   color: var(--text-primary);
+  cursor: pointer;
+  padding: 0.25rem 0;
+  border-radius: var(--radius);
+  transition: opacity 0.15s;
+}
+
+.logo:hover {
+  opacity: 0.9;
+}
+
+.logo:focus {
+  outline: none;
+}
+
+.logo:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 .logoIcon {
   color: var(--accent);
   font-size: 1.2rem;
+}
+
+.searchWrap {
+  flex: 1;
+  min-width: 180px;
+  max-width: 420px;
+}
+
+.browseBtn {
+  padding: 0.35rem 0.6rem;
+  font-size: 0.85rem;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.browseBtn:hover {
+  border-color: var(--glass-border-accent);
+  color: var(--accent);
 }
 
 .breadcrumbNav {

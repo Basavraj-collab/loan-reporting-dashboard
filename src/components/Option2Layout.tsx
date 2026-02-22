@@ -1,7 +1,10 @@
-import { useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { segments } from '../data/navigation'
+import { getSegmentById, getSubSegmentById } from '../data/navigation'
+import { loadRecent, saveRecentItem, type RecentItem } from '../data/reportDiscovery'
 import { DateRangeSelector } from './DateRangeSelector'
+import { ReportSearch } from './ReportSearch'
+import { ReportsFlyout } from './ReportsFlyout'
 import styles from './Option2Layout.module.css'
 
 interface Option2LayoutProps {
@@ -11,57 +14,71 @@ interface Option2LayoutProps {
 export function Option2Layout({ children }: Option2LayoutProps) {
   const navigate = useNavigate()
   const location = useLocation()
+  const [flyoutOpen, setFlyoutOpen] = useState(false)
+  const [recent, setRecent] = useState<RecentItem[]>(() => loadRecent())
 
-  const { segmentId, subSegmentId } = useMemo(() => {
+  const isSegmentRoute = useMemo(() => {
     const m = location.pathname.match(/^\/segment\/([^/]+)\/([^/]+)/)
-    if (m) return { segmentId: m[1], subSegmentId: m[2] }
-    const seg = segments[0]
-    const sub = seg?.subSegments[0]
-    return { segmentId: seg?.id ?? '', subSegmentId: sub?.id ?? '' }
+    return m ? { segmentId: m[1], subSegmentId: m[2] } : null
   }, [location.pathname])
 
-  const segment = useMemo(() => segments.find((s) => s.id === segmentId), [segmentId])
-  const subSegments = segment?.subSegments ?? []
+  useEffect(() => {
+    if (location.pathname === '/') {
+      navigate('/hub', { replace: true })
+    }
+  }, [location.pathname, navigate])
 
-  const onSegmentChange = (segId: string) => {
-    const seg = segments.find((s) => s.id === segId)
-    const first = seg?.subSegments[0]
-    if (first) navigate('/segment/' + segId + '/' + first.id)
-  }
+  useEffect(() => {
+    if (!isSegmentRoute) return
+    const { segmentId, subSegmentId } = isSegmentRoute
+    const segment = getSegmentById(segmentId)
+    const sub = getSubSegmentById(segmentId, subSegmentId)
+    const label = segment && sub ? `${segment.name} › ${sub.name}` : subSegmentId
+    saveRecentItem({ segmentId, subSegmentId, label })
+    setRecent(loadRecent())
+  }, [isSegmentRoute?.segmentId, isSegmentRoute?.subSegmentId])
 
-  const onSubSegmentChange = (subId: string) => {
-    navigate('/segment/' + segmentId + '/' + subId)
-  }
+  const openBrowse = () => setFlyoutOpen(true)
+  const isOnHub = location.pathname === '/hub'
 
   return (
     <div className={styles.wrapper}>
       <header className={styles.header}>
-        <div className={styles.logo}>
+        <div
+          className={styles.logo}
+          onClick={() => navigate('/hub')}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => e.key === 'Enter' && navigate('/hub')}
+        >
           <span className={styles.logoIcon}>◈</span>
           <span>Loan Reports</span>
         </div>
-        <nav className={styles.nav}>
-          <button type="button" className={styles.pinnedBtn} onClick={() => navigate('/pinned')}>
-            Pinned reports
+        <div className={styles.searchWrap}>
+          <ReportSearch onOpenBrowse={openBrowse} onSelect={() => setFlyoutOpen(false)} />
+        </div>
+        <div className={styles.actions}>
+          {!isOnHub && (
+            <button type="button" className={styles.homeBtn} onClick={() => navigate('/hub')}>
+              Home
+            </button>
+          )}
+          <button type="button" className={styles.browseBtn} onClick={openBrowse}>
+            Browse all
           </button>
-          <div className={styles.dropdownGroup}>
-            <label className={styles.dropdownLabel}>Segment</label>
-            <select className={styles.select} value={segmentId} onChange={(e) => onSegmentChange(e.target.value)}>
-              {segments.map((s) => (
-                <option key={s.id} value={s.id}>{s.name}</option>
-              ))}
-            </select>
-          </div>
-          <div className={styles.dropdownGroup}>
-            <label className={styles.dropdownLabel}>Sub-segment</label>
-            <select className={styles.select} value={subSegmentId} onChange={(e) => onSubSegmentChange(e.target.value)}>
-              {subSegments.map((s) => (
-                <option key={s.id} value={s.id}>{s.name}</option>
-              ))}
-            </select>
-          </div>
-        </nav>
+          <button type="button" className={styles.pinnedBtn} onClick={() => navigate('/pinned')}>
+            Pinned
+          </button>
+        </div>
       </header>
+
+      <ReportsFlyout
+        open={flyoutOpen}
+        onClose={() => setFlyoutOpen(false)}
+        recent={recent}
+        onNavigate={() => setFlyoutOpen(false)}
+      />
+
       <main className={styles.main}>
         <div className={styles.dateBar}>
           <DateRangeSelector />

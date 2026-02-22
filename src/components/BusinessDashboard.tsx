@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { getReportsBySubSegment } from '../data/reports-new'
 import { MetricCard } from './MetricCard'
+import { DataPopup } from './DataPopup'
 import { BankingReportsView } from './BankingReportsView'
 import {
   ProductWiseDisbursementView,
@@ -99,6 +100,13 @@ type AnyReport = {
   metrics: any[]
   table?: { headers: string[]; rows: (string | number)[][] }
   rawData?: { headers: string[]; rows: (string | number)[][] }
+  performanceWidgets?: {
+    metricCohort: string
+    highestPerformer: string
+    lowestPerformer: string
+    highestContributionPct: string
+    lowestContributionPct: string
+  }[]
 }
 
 function BusinessHealthView({ reports }: { reports: AnyReport[] }) {
@@ -107,6 +115,10 @@ function BusinessHealthView({ reports }: { reports: AnyReport[] }) {
   const performersReport = reports.find((r) => r.id === 'highest-lowest-performers')
 
   const [activeTab, setActiveTab] = useState<'kpi' | 'ratios' | 'performance'>('kpi')
+  const [performancePopup, setPerformancePopup] = useState<{
+    widgetIndex: number
+    row: 'highest' | 'lowest'
+  } | null>(null)
 
   const renderTabContent = () => {
     if (activeTab === 'kpi') {
@@ -148,16 +160,63 @@ function BusinessHealthView({ reports }: { reports: AnyReport[] }) {
       )
     }
 
+    const widgets = performersReport?.performanceWidgets ?? []
     return (
       <section className={styles.section}>
         <div className={styles.sectionHeader}>
           <h2 className={styles.sectionTitle}>Performance distribution</h2>
         </div>
-        <div className={styles.metricsGrid}>
-          {performersReport?.metrics.map((metric, i) => (
-            <MetricCard key={i} metric={metric} report={performersReport} />
+        <div className={styles.performanceWidgetsGrid}>
+          {widgets.map((w, i) => (
+            <div key={i} className={styles.performanceWidget}>
+              <h3 className={styles.performanceWidgetTitle}>{w.metricCohort}</h3>
+              <table className={styles.performanceMatrix} aria-label={`${w.metricCohort} – highest and lowest performer`}>
+                <thead>
+                  <tr>
+                    <th className={styles.performanceMatrixTh} scope="col" />
+                    <th className={styles.performanceMatrixTh} scope="col">Value</th>
+                    <th className={styles.performanceMatrixTh} scope="col">% contribution</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className={styles.performanceMatrixLabel}>Highest performer</td>
+                    <td className={styles.performanceMatrixValue}>
+                      <button
+                        type="button"
+                        className={styles.performanceMatrixValueBtn}
+                        onClick={() => setPerformancePopup({ widgetIndex: i, row: 'highest' })}
+                      >
+                        {w.highestPerformer}
+                      </button>
+                    </td>
+                    <td className={styles.performanceMatrixPct}>{w.highestContributionPct}</td>
+                  </tr>
+                  <tr>
+                    <td className={styles.performanceMatrixLabel}>Lowest performer</td>
+                    <td className={styles.performanceMatrixValue}>
+                      <button
+                        type="button"
+                        className={styles.performanceMatrixValueBtn}
+                        onClick={() => setPerformancePopup({ widgetIndex: i, row: 'lowest' })}
+                      >
+                        {w.lowestPerformer}
+                      </button>
+                    </td>
+                    <td className={styles.performanceMatrixPct}>{w.lowestContributionPct}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           ))}
         </div>
+        {performancePopup !== null && performersReport?.rawData && (
+          <DataPopup
+            title={`${widgets[performancePopup.widgetIndex].metricCohort} – ${performancePopup.row === 'highest' ? 'Highest performer' : 'Lowest performer'}`}
+            data={performersReport.rawData}
+            onClose={() => setPerformancePopup(null)}
+          />
+        )}
       </section>
     )
   }
