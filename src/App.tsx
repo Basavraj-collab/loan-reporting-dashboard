@@ -1,8 +1,10 @@
-import { useState } from 'react'
+import { createContext, useState } from 'react'
 import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom'
 import { segments } from './data/navigation'
 import { Layout } from './components/Layout'
 import { PortalTabBar, type PortalOption } from './components/PortalTabBar'
+
+export const PortalOptionContext = createContext<PortalOption>(1)
 import { Option2Layout } from './components/Option2Layout'
 import { Option3Layout } from './components/Option3Layout'
 import { BusinessDashboard } from './components/BusinessDashboard'
@@ -43,12 +45,14 @@ function App() {
   }
 
   return (
-    <div className="portal-app">
-      <PortalTabBar selected={portalOption} onSelect={handlePortalSelect} />
-      {portalOption === 1 && <Layout>{appRoutes}</Layout>}
-      {portalOption === 2 && <Option2Layout>{appRoutes}</Option2Layout>}
-      {portalOption === 3 && <Option3Layout>{appRoutes}</Option3Layout>}
-    </div>
+    <PortalOptionContext.Provider value={portalOption}>
+      <div className="portal-app">
+        <PortalTabBar selected={portalOption} onSelect={handlePortalSelect} />
+        {portalOption === 1 && <Layout>{appRoutes}</Layout>}
+        {portalOption === 2 && <Option2Layout>{appRoutes}</Option2Layout>}
+        {portalOption === 3 && <Option3Layout>{appRoutes}</Option3Layout>}
+      </div>
+    </PortalOptionContext.Provider>
   )
 }
 

@@ -60,6 +60,9 @@ export const profitAndLoss = {
 export interface TrialBalanceRow {
   accountId: string
   accountName: string
+  date: string
+  accountNumber: string
+  visionGL: string
   debit: number
   credit: number
 }
@@ -67,19 +70,19 @@ export interface TrialBalanceRow {
 export const trialBalance = {
   asOn: AS_ON_DATE,
   rows: [
-    { accountId: 'cash-bank', accountName: 'Cash and Bank', debit: 2_45_00_000, credit: 0 },
-    { accountId: 'loan-receivables', accountName: 'Loan Receivables', debit: 12_80_00_000, credit: 0 },
-    { accountId: 'interest-receivable', accountName: 'Interest Receivable', debit: 1_20_000, credit: 0 },
-    { accountId: 'other-assets', accountName: 'Other Assets', debit: 15_00_000, credit: 0 },
-    { accountId: 'borrowings', accountName: 'Borrowings', debit: 0, credit: 9_50_00_000 },
-    { accountId: 'other-liabilities', accountName: 'Other Liabilities', debit: 0, credit: 15_00_000 },
-    { accountId: 'share-capital', accountName: 'Share Capital', debit: 0, credit: 2_00_00_000 },
-    { accountId: 'reserves', accountName: 'Reserves', debit: 0, credit: 1_33_00_000 },
-    { accountId: 'interest-income', accountName: 'Interest Income', debit: 0, credit: 42_00_000 },
-    { accountId: 'fee-income', accountName: 'Processing Fee Income', debit: 0, credit: 8_00_000 },
-    { accountId: 'interest-expense', accountName: 'Interest Expense', debit: 18_00_000, credit: 0 },
-    { accountId: 'operating-expense', accountName: 'Operating Expenses', debit: 12_00_000, credit: 0 },
-    { accountId: 'profit-pnl', accountName: 'Profit for the period', debit: 0, credit: 17_00_000 },
+    { accountId: 'cash-bank', accountName: 'Cash and Bank', date: AS_ON_DATE, accountNumber: '10010001', visionGL: '10100101', debit: 2_45_00_000, credit: 0 },
+    { accountId: 'loan-receivables', accountName: 'Loan Receivables', date: AS_ON_DATE, accountNumber: '10010002', visionGL: '10100102', debit: 12_80_00_000, credit: 0 },
+    { accountId: 'interest-receivable', accountName: 'Interest Receivable', date: AS_ON_DATE, accountNumber: '10010003', visionGL: '10100103', debit: 1_20_000, credit: 0 },
+    { accountId: 'other-assets', accountName: 'Other Assets', date: AS_ON_DATE, accountNumber: '10010004', visionGL: '10100104', debit: 15_00_000, credit: 0 },
+    { accountId: 'borrowings', accountName: 'Borrowings', date: AS_ON_DATE, accountNumber: '20010001', visionGL: '20100101', debit: 0, credit: 9_50_00_000 },
+    { accountId: 'other-liabilities', accountName: 'Other Liabilities', date: AS_ON_DATE, accountNumber: '20010002', visionGL: '20100102', debit: 0, credit: 15_00_000 },
+    { accountId: 'share-capital', accountName: 'Share Capital', date: AS_ON_DATE, accountNumber: '30010001', visionGL: '30100101', debit: 0, credit: 2_00_00_000 },
+    { accountId: 'reserves', accountName: 'Reserves', date: AS_ON_DATE, accountNumber: '30010002', visionGL: '30100102', debit: 0, credit: 1_33_00_000 },
+    { accountId: 'interest-income', accountName: 'Interest Income', date: AS_ON_DATE, accountNumber: '40010001', visionGL: '40100101', debit: 0, credit: 42_00_000 },
+    { accountId: 'fee-income', accountName: 'Processing Fee Income', date: AS_ON_DATE, accountNumber: '40010002', visionGL: '40100102', debit: 0, credit: 8_00_000 },
+    { accountId: 'interest-expense', accountName: 'Interest Expense', date: AS_ON_DATE, accountNumber: '50010001', visionGL: '50100101', debit: 18_00_000, credit: 0 },
+    { accountId: 'operating-expense', accountName: 'Operating Expenses', date: AS_ON_DATE, accountNumber: '50010002', visionGL: '50100102', debit: 12_00_000, credit: 0 },
+    { accountId: 'profit-pnl', accountName: 'Profit for the period', date: AS_ON_DATE, accountNumber: '30010003', visionGL: '30100103', debit: 0, credit: 17_00_000 },
   ] as TrialBalanceRow[],
 }
 
@@ -87,6 +90,7 @@ export const trialBalance = {
 export interface LedgerEntry {
   date: string
   particulars: string
+  voucherNo: string
   debit: number
   credit: number
   balance: number
@@ -119,103 +123,103 @@ export const ledgers: Record<string, LedgerAccount> = {
     accountId: 'cash-bank',
     accountName: 'Cash and Bank',
     entries: [
-      { date: '02-Jan-2025', particulars: 'Processing fee received - Loan LN-001', debit: 2000, credit: 0, balance: 2000, journalId: 'j-fee-1' },
-      { date: '05-Jan-2025', particulars: 'Loan disbursement - LN-001', debit: 0, credit: 100000, balance: -98000, journalId: 'j-disb-1' },
-      { date: '05-Feb-2025', particulars: 'EMI received - LN-001 (Interest ₹1,000, Principal ₹8,000)', debit: 9000, credit: 0, balance: -89000, journalId: 'j-emi-1' },
-      { date: '10-Jan-2025', particulars: 'EMI received - LN-002', debit: 12000, credit: 0, balance: -77000, journalId: 'j-emi-2' },
-      { date: '15-Jan-2025', particulars: 'Borrowings received', debit: 5000000, credit: 0, balance: 4923000, journalId: 'j-borrow-1' },
-      { date: '20-Jan-2025', particulars: 'Loan disbursements (batch)', debit: 0, credit: 2450000, balance: 2473000, journalId: 'j-disb-batch' },
+      { date: '02-Jan-2025', particulars: 'Processing fee received - Loan LN-001', voucherNo: 'JV-2001', debit: 2000, credit: 0, balance: 2000, journalId: 'j-fee-1' },
+      { date: '05-Jan-2025', particulars: 'Loan disbursement - LN-001', voucherNo: 'JV-2002', debit: 0, credit: 100000, balance: -98000, journalId: 'j-disb-1' },
+      { date: '05-Feb-2025', particulars: 'EMI received - LN-001 (Interest ₹1,000, Principal ₹8,000)', voucherNo: 'JV-2003', debit: 9000, credit: 0, balance: -89000, journalId: 'j-emi-1' },
+      { date: '10-Jan-2025', particulars: 'EMI received - LN-002', voucherNo: 'JV-2004', debit: 12000, credit: 0, balance: -77000, journalId: 'j-emi-2' },
+      { date: '15-Jan-2025', particulars: 'Borrowings received', voucherNo: 'JV-2005', debit: 5000000, credit: 0, balance: 4923000, journalId: 'j-borrow-1' },
+      { date: '20-Jan-2025', particulars: 'Loan disbursements (batch)', voucherNo: 'JV-2006', debit: 0, credit: 2450000, balance: 2473000, journalId: 'j-disb-batch' },
     ],
   },
   'loan-receivables': {
     accountId: 'loan-receivables',
     accountName: 'Loan Receivables',
     entries: [
-      { date: '05-Jan-2025', particulars: 'Disbursement - LN-001 (Customer A, ₹1,00,000)', debit: 100000, credit: 0, balance: 100000, journalId: 'j-disb-1' },
-      { date: '05-Feb-2025', particulars: 'Principal portion of EMI - LN-001', debit: 0, credit: 8000, balance: 92000, journalId: 'j-emi-1' },
-      { date: '08-Jan-2025', particulars: 'Disbursement - LN-002 (Customer B, ₹1,50,000)', debit: 150000, credit: 0, balance: 250000, journalId: 'j-disb-2' },
-      { date: '10-Jan-2025', particulars: 'Principal portion of EMI - LN-002', debit: 0, credit: 11000, balance: 239000, journalId: 'j-emi-2' },
-      { date: '20-Jan-2025', particulars: 'Disbursements - Batch (multiple loans)', debit: 2450000, credit: 0, balance: 2689000, journalId: 'j-disb-batch' },
+      { date: '05-Jan-2025', particulars: 'Disbursement - LN-001 (Customer A, ₹1,00,000)', voucherNo: 'JV-2002', debit: 100000, credit: 0, balance: 100000, journalId: 'j-disb-1' },
+      { date: '05-Feb-2025', particulars: 'Principal portion of EMI - LN-001', voucherNo: 'JV-2003', debit: 0, credit: 8000, balance: 92000, journalId: 'j-emi-1' },
+      { date: '08-Jan-2025', particulars: 'Disbursement - LN-002 (Customer B, ₹1,50,000)', voucherNo: 'JV-2007', debit: 150000, credit: 0, balance: 250000, journalId: 'j-disb-2' },
+      { date: '10-Jan-2025', particulars: 'Principal portion of EMI - LN-002', voucherNo: 'JV-2004', debit: 0, credit: 11000, balance: 239000, journalId: 'j-emi-2' },
+      { date: '20-Jan-2025', particulars: 'Disbursements - Batch (multiple loans)', voucherNo: 'JV-2006', debit: 2450000, credit: 0, balance: 2689000, journalId: 'j-disb-batch' },
     ],
   },
   'interest-income': {
     accountId: 'interest-income',
     accountName: 'Interest Income',
     entries: [
-      { date: '05-Feb-2025', particulars: 'Interest on EMI - LN-001 (12% p.a., ₹1,000)', debit: 0, credit: 1000, balance: -1000, journalId: 'j-emi-1' },
-      { date: '10-Jan-2025', particulars: 'Interest on EMI - LN-002', debit: 0, credit: 1500, balance: -2500, journalId: 'j-emi-2' },
-      { date: '31-Jan-2025', particulars: 'Interest accrued for the month', debit: 0, credit: 42000, balance: -44500, journalId: 'j-accrued' },
+      { date: '05-Feb-2025', particulars: 'Interest on EMI - LN-001 (12% p.a., ₹1,000)', voucherNo: 'JV-2003', debit: 0, credit: 1000, balance: -1000, journalId: 'j-emi-1' },
+      { date: '10-Jan-2025', particulars: 'Interest on EMI - LN-002', voucherNo: 'JV-2004', debit: 0, credit: 1500, balance: -2500, journalId: 'j-emi-2' },
+      { date: '31-Jan-2025', particulars: 'Interest accrued for the month', voucherNo: 'JV-2008', debit: 0, credit: 42000, balance: -44500, journalId: 'j-accrued' },
     ],
   },
   'fee-income': {
     accountId: 'fee-income',
     accountName: 'Processing Fee Income',
     entries: [
-      { date: '02-Jan-2025', particulars: 'Processing fee - LN-001 (₹2,000)', debit: 0, credit: 2000, balance: -2000, journalId: 'j-fee-1' },
-      { date: '08-Jan-2025', particulars: 'Processing fee - LN-002 (₹2,500)', debit: 0, credit: 2500, balance: -4500, journalId: 'j-fee-2' },
+      { date: '02-Jan-2025', particulars: 'Processing fee - LN-001 (₹2,000)', voucherNo: 'JV-2001', debit: 0, credit: 2000, balance: -2000, journalId: 'j-fee-1' },
+      { date: '08-Jan-2025', particulars: 'Processing fee - LN-002 (₹2,500)', voucherNo: 'JV-2007', debit: 0, credit: 2500, balance: -4500, journalId: 'j-fee-2' },
     ],
   },
   'interest-receivable': {
     accountId: 'interest-receivable',
     accountName: 'Interest Receivable',
     entries: [
-      { date: '31-Jan-2025', particulars: 'Interest accrued on loan book', debit: 120000, credit: 0, balance: 120000, journalId: 'j-accrued' },
+      { date: '31-Jan-2025', particulars: 'Interest accrued on loan book', voucherNo: 'JV-2008', debit: 120000, credit: 0, balance: 120000, journalId: 'j-accrued' },
     ],
   },
   'borrowings': {
     accountId: 'borrowings',
     accountName: 'Borrowings',
     entries: [
-      { date: '15-Jan-2025', particulars: 'Funding received - Term facility', debit: 0, credit: 5000000, balance: -5000000, journalId: 'j-borrow-1' },
+      { date: '15-Jan-2025', particulars: 'Funding received - Term facility', voucherNo: 'JV-2005', debit: 0, credit: 5000000, balance: -5000000, journalId: 'j-borrow-1' },
     ],
   },
   'interest-expense': {
     accountId: 'interest-expense',
     accountName: 'Interest Expense',
     entries: [
-      { date: '31-Jan-2025', particulars: 'Interest on borrowings for the month', debit: 18000, credit: 0, balance: 18000, journalId: 'j-int-exp' },
+      { date: '31-Jan-2025', particulars: 'Interest on borrowings for the month', voucherNo: 'JV-2009', debit: 18000, credit: 0, balance: 18000, journalId: 'j-int-exp' },
     ],
   },
   'operating-expense': {
     accountId: 'operating-expense',
     accountName: 'Operating Expenses',
     entries: [
-      { date: '25-Jan-2025', particulars: 'Salaries and admin', debit: 12000, credit: 0, balance: 12000, journalId: 'j-opex' },
+      { date: '25-Jan-2025', particulars: 'Salaries and admin', voucherNo: 'JV-2010', debit: 12000, credit: 0, balance: 12000, journalId: 'j-opex' },
     ],
   },
   'other-assets': {
     accountId: 'other-assets',
     accountName: 'Other Assets',
     entries: [
-      { date: '01-Jan-2025', particulars: 'Opening balance', debit: 1500000, credit: 0, balance: 1500000, journalId: 'j-opening' },
+      { date: '01-Jan-2025', particulars: 'Opening balance', voucherNo: 'JV-0001', debit: 1500000, credit: 0, balance: 1500000, journalId: 'j-opening' },
     ],
   },
   'other-liabilities': {
     accountId: 'other-liabilities',
     accountName: 'Other Liabilities',
     entries: [
-      { date: '01-Jan-2025', particulars: 'Opening balance', debit: 0, credit: 150000, balance: -150000, journalId: 'j-opening' },
+      { date: '01-Jan-2025', particulars: 'Opening balance', voucherNo: 'JV-0001', debit: 0, credit: 150000, balance: -150000, journalId: 'j-opening' },
     ],
   },
   'share-capital': {
     accountId: 'share-capital',
     accountName: 'Share Capital',
     entries: [
-      { date: '01-Jan-2025', particulars: 'Opening balance', debit: 0, credit: 2000000, balance: -2000000, journalId: 'j-opening' },
+      { date: '01-Jan-2025', particulars: 'Opening balance', voucherNo: 'JV-0001', debit: 0, credit: 2000000, balance: -2000000, journalId: 'j-opening' },
     ],
   },
   'reserves': {
     accountId: 'reserves',
     accountName: 'Reserves',
     entries: [
-      { date: '01-Jan-2025', particulars: 'Opening balance', debit: 0, credit: 1330000, balance: -1330000, journalId: 'j-opening' },
+      { date: '01-Jan-2025', particulars: 'Opening balance', voucherNo: 'JV-0001', debit: 0, credit: 1330000, balance: -1330000, journalId: 'j-opening' },
     ],
   },
   'profit-pnl': {
     accountId: 'profit-pnl',
     accountName: 'Profit for the period',
     entries: [
-      { date: '31-Jan-2025', particulars: 'Transfer from P&L', debit: 0, credit: 170000, balance: -170000, journalId: 'j-pl-transfer' },
+      { date: '31-Jan-2025', particulars: 'Transfer from P&L', voucherNo: 'JV-2011', debit: 0, credit: 170000, balance: -170000, journalId: 'j-pl-transfer' },
     ],
   },
 }
