@@ -56,6 +56,7 @@
 }
 
 .sectionHeader {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -192,6 +193,7 @@
 }
 
 .reportCard {
+  position: relative;
   background: var(--glass-bg);
   backdrop-filter: blur(var(--glass-blur));
   -webkit-backdrop-filter: blur(var(--glass-blur));

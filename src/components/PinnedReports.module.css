@@ -66,3 +66,127 @@
   margin-top: 0.25rem;
 }
 
+.cardMetrics {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem 1rem;
+  margin: 0.5rem 0;
+  padding: 0.5rem 0;
+  border-top: 1px solid var(--glass-border);
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.metric {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.metricLabel {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+
+.metricValue {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.metricChange {
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.metricChange[data-trend="up"] {
+  color: var(--success, #22c55e);
+}
+
+.metricChange[data-trend="down"] {
+  color: var(--danger, #ef4444);
+}
+
+/* Option 1 only: collapsible sections with editable names */
+.sections {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.section {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  box-shadow: var(--glass-shadow);
+  overflow: hidden;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: none;
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text-primary);
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.sectionHeader:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.sectionArrow {
+  flex-shrink: 0;
+  color: var(--accent);
+  font-size: 0.8rem;
+}
+
+.sectionName {
+  flex: 1;
+  padding: 0.15rem 0;
+  border-radius: var(--radius-sm);
+  cursor: text;
+}
+
+.sectionName:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.sectionNameInput {
+  flex: 1;
+  min-width: 0;
+  padding: 0.35rem 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: inherit;
+  color: var(--text-primary);
+  background: rgba(15, 22, 32, 0.6);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-sm);
+}
+
+.sectionNameInput:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.sectionBody {
+  padding: 0.75rem 1rem 1rem;
+  border-top: 1px solid var(--glass-border);
+}
+
+.sectionBody .grid {
+  margin: 0;
+}
+

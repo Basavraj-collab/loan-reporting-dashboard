@@ -1,6 +1,8 @@
-import { useState, useRef, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { useState, useRef, useEffect, useContext } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { getTopicGroups, type TopicGroup } from '../data/reportDiscovery'
+import { getSegmentById } from '../data/navigation'
+import { PortalOptionContext } from '../App'
 import styles from './ReportHub.module.css'
 
 interface TopicReportsFlyoutProps {
@@ -59,8 +61,22 @@ function TopicReportsFlyout({ topic, onClose }: TopicReportsFlyoutProps) {
 export function ReportHub() {
   const [topicFlyout, setTopicFlyout] = useState<TopicGroup | null>(null)
   const groups = getTopicGroups()
+  const portalOption = useContext(PortalOptionContext)
+  const navigate = useNavigate()
+  const isOption2 = portalOption === 2
 
-  const openTopic = (topic: TopicGroup) => setTopicFlyout(topic)
+  const openTopic = (topic: TopicGroup) => {
+    if (isOption2) {
+      const segmentId = topic.reports[0]?.segmentId
+      const segment = segmentId ? getSegmentById(segmentId) : undefined
+      const firstSubId = segment?.subSegments[0]?.id
+      if (segmentId && firstSubId) {
+        navigate(`/segment/${segmentId}/${firstSubId}`)
+        return
+      }
+    }
+    setTopicFlyout(topic)
+  }
   const closeTopic = () => setTopicFlyout(null)
 
   return (

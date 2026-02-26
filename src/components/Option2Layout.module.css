@@ -51,18 +51,22 @@
   flex-shrink: 0;
 }
 
-.homeBtn {
+.hubBtn {
   padding: 0.5rem 0.85rem;
   font-size: 0.9rem;
+  font-weight: 600;
   border: 1px solid var(--glass-border);
   border-radius: var(--radius);
   background: rgba(255, 255, 255, 0.05);
   color: var(--text-primary);
   cursor: pointer;
   transition: border-color 0.2s, background 0.2s;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
 }
 
-.homeBtn:hover {
+.hubBtn:hover {
   background: rgba(13, 148, 136, 0.15);
   border-color: var(--glass-border-accent);
   color: var(--accent);
@@ -121,4 +125,113 @@
   margin-bottom: 1rem;
   padding-bottom: 1rem;
   border-bottom: 1px solid var(--glass-border);
+}
+
+/* Sub-segment tabs (Option 2 segment view) */
+.subSegmentTabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.subSegmentTab {
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-secondary);
+  text-decoration: none;
+  border: 1px solid transparent;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.subSegmentTab:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-primary);
+}
+
+.subSegmentTabActive {
+  background: rgba(13, 148, 136, 0.2);
+  color: var(--accent);
+  border-color: var(--glass-border-accent);
+}
+
+/* Global switcher (dots in square icon) */
+.globalSwitcherWrap {
+  position: relative;
+}
+
+.globalSwitcherBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, color 0.2s;
+}
+
+.globalSwitcherBtn:hover {
+  background: rgba(13, 148, 136, 0.15);
+  border-color: var(--glass-border-accent);
+  color: var(--accent);
+}
+
+.globalSwitcherIcon {
+  font-size: 1.1rem;
+  line-height: 1;
+  letter-spacing: -0.05em;
+}
+
+.globalSwitcherDropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 0.35rem;
+  min-width: 220px;
+  padding: 0.35rem;
+  background: var(--glass-bg-strong);
+  backdrop-filter: blur(var(--glass-blur-strong));
+  -webkit-backdrop-filter: blur(var(--glass-blur-strong));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.globalSwitcherItem {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.15rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  text-decoration: none;
+  transition: background 0.12s;
+}
+
+.globalSwitcherItem:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--accent);
+}
+
+.globalSwitcherItemMeta {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.globalSwitcherItem:hover .globalSwitcherItemMeta {
+  color: var(--text-secondary);
 }

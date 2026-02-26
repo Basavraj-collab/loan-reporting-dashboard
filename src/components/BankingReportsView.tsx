@@ -9,7 +9,15 @@ import {
   type LedgerAccount,
 } from '../data/bankingReportsData'
 import { PortalOptionContext } from '../App'
+import { AISummaryPanel } from './AISummaryPanel'
 import styles from './BankingReportsView.module.css'
+
+const BANKING_REPORTS_SUMMARY = {
+  id: 'banking-reports',
+  title: 'Banking Reports',
+  description: 'Balance sheet, profit & loss, and trial balance with drill-down to ledger and journal entries. Supports export and reconciliation views.',
+  metrics: [] as { label: string; value: string; change?: string; trend?: 'up' | 'down' }[],
+}
 
 type ReportStep = 'balance-sheet' | 'profit-loss' | 'trial-balance'
 
@@ -95,7 +103,10 @@ export function BankingReportsView() {
 
   return (
     <div className={styles.wrapper}>
-      <h1 className={styles.pageTitle}>Reports and insights</h1>
+      <div className={styles.pageTitleRow}>
+        <h1 className={styles.pageTitle}>Reports and insights</h1>
+        {isOption1 && <AISummaryPanel report={BANKING_REPORTS_SUMMARY} />}
+      </div>
 
       {/* ---------- Top navigation: Balance Sheet > Profit & Loss > Trial Balance ---------- */}
       <nav className={styles.breadcrumb} aria-label="Report navigation">

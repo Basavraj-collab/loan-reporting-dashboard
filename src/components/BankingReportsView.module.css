@@ -3,10 +3,15 @@
   padding-bottom: 2rem;
 }
 
+.pageTitleRow {
+  position: relative;
+  margin-bottom: 1rem;
+}
+
 .pageTitle {
   font-size: 1.35rem;
   font-weight: 700;
-  margin: 0 0 1rem;
+  margin: 0;
   color: var(--text-primary);
 }
 
