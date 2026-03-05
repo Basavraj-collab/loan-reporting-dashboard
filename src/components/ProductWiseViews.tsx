@@ -5,14 +5,9 @@ import {
   getRiskProductData,
 } from '../data/productWiseReportData'
 import { ProductWiseSection } from './ProductWiseSection'
-import { AISummaryPanel } from './AISummaryPanel'
 import type { SectionVariant } from './ProductWiseSection'
 import type { ProductWiseSectionData } from '../data/productWiseReportData'
 import styles from './ProductWiseViews.module.css'
-
-const DISBURSEMENT_REPORT = { id: 'disbursement-product', title: 'Loan product wise analysis – Disbursement', description: 'Disbursement trend, month-wise, store-wise, and dimension × metrics by product type.', metrics: [] as { label: string; value: string; change?: string; trend?: 'up' | 'down' }[] }
-const COLLECTION_REPORT = { id: 'collection-product', title: 'Loan product wise analysis – Collection', description: 'Collection trend and metrics by month, store, and dimensions by product type.', metrics: [] as { label: string; value: string; change?: string; trend?: 'up' | 'down' }[] }
-const RISK_REPORT = { id: 'risk-product', title: 'Loan product wise analysis – Risk', description: 'NPA trend and risk metrics by month, store, and dimensions by product type.', metrics: [] as { label: string; value: string; change?: string; trend?: 'up' | 'down' }[] }
 
 function ProductAccordion({
   sections,
@@ -65,10 +60,7 @@ export function ProductWiseDisbursementView() {
   const sections = getDisbursementProductData()
   return (
     <div className={styles.wrapper}>
-      <div className={styles.pageTitleRow}>
-        <h1 className={styles.pageTitle}>Loan product wise analysis – Disbursement</h1>
-        <AISummaryPanel report={DISBURSEMENT_REPORT} />
-      </div>
+      <h1 className={styles.pageTitle}>Loan product wise analysis – Disbursement</h1>
       <p className={styles.subtitle}>
         Click a product type to expand or collapse its reports. Trend, month-wise, store-wise, and dimension × metrics.
       </p>
@@ -81,10 +73,7 @@ export function ProductWiseCollectionView() {
   const sections = getCollectionProductData()
   return (
     <div className={styles.wrapper}>
-      <div className={styles.pageTitleRow}>
-        <h1 className={styles.pageTitle}>Loan product wise analysis – Collection</h1>
-        <AISummaryPanel report={COLLECTION_REPORT} />
-      </div>
+      <h1 className={styles.pageTitle}>Loan product wise analysis – Collection</h1>
       <p className={styles.subtitle}>
         Click a product type to expand or collapse its reports. Collection trend and metrics by month, store, and dimensions.
       </p>
@@ -97,10 +86,7 @@ export function ProductWiseRiskView() {
   const sections = getRiskProductData()
   return (
     <div className={styles.wrapper}>
-      <div className={styles.pageTitleRow}>
-        <h1 className={styles.pageTitle}>Loan product wise analysis – Risk</h1>
-        <AISummaryPanel report={RISK_REPORT} />
-      </div>
+      <h1 className={styles.pageTitle}>Loan product wise analysis – Risk</h1>
       <p className={styles.subtitle}>
         Click a product type to expand or collapse its reports. NPA trend and risk metrics by month, store, and dimensions.
       </p>

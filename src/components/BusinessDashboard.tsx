@@ -3,7 +3,6 @@ import { Link, useParams } from 'react-router-dom'
 import { getReportsBySubSegment } from '../data/reports-new'
 import { MetricCard } from './MetricCard'
 import { DataPopup } from './DataPopup'
-import { AISummaryPanel } from './AISummaryPanel'
 import { BankingReportsView } from './BankingReportsView'
 import {
   ProductWiseDisbursementView,
@@ -53,7 +52,6 @@ export function BusinessDashboard() {
       <div className={styles.reportsGrid}>
         {reports.map((report) => (
           <div key={report.id} className={styles.reportCard}>
-            <AISummaryPanel report={report} />
             <h3 className={styles.reportTitle}>{report.title}</h3>
             <p className={styles.reportDesc}>{report.description}</p>
             <div className={styles.metrics}>
@@ -132,7 +130,6 @@ function BusinessHealthView({ reports }: { reports: AnyReport[] }) {
           <div className={styles.sectionHeader}>
             <h2 className={styles.sectionTitle}>Key KPI</h2>
             <div className={styles.sectionActions}>
-              {businessHealthReport && <AISummaryPanel report={businessHealthReport} />}
               <Link
                 to="/segment/banking-hygiene/banking-reports"
                 className={styles.navLink}
@@ -156,9 +153,6 @@ function BusinessHealthView({ reports }: { reports: AnyReport[] }) {
         <section className={styles.section}>
           <div className={styles.sectionHeader}>
             <h2 className={styles.sectionTitle}>Ratios</h2>
-            <div className={styles.sectionActions}>
-              {lendingRatiosReport && <AISummaryPanel report={lendingRatiosReport} />}
-            </div>
           </div>
           <div className={styles.metricsGrid}>
             {lendingRatiosReport?.metrics.map((metric, i) => (
@@ -174,9 +168,6 @@ function BusinessHealthView({ reports }: { reports: AnyReport[] }) {
       <section className={styles.section}>
         <div className={styles.sectionHeader}>
           <h2 className={styles.sectionTitle}>Performance distribution</h2>
-          <div className={styles.sectionActions}>
-            {performersReport && <AISummaryPanel report={performersReport} />}
-          </div>
         </div>
         <div className={styles.performanceWidgetsGrid}>
           {widgets.map((w, i) => (
@@ -276,9 +267,6 @@ function AudienceOverviewView({ reports }: { reports: AnyReport[] }) {
         <section className={styles.section}>
           <div className={styles.sectionHeader}>
             <h2 className={styles.sectionTitle}>Active users overview</h2>
-            <div className={styles.sectionActions}>
-              {activeCustomers && <AISummaryPanel report={activeCustomers} />}
-            </div>
           </div>
           <div className={styles.metricsGrid}>
             {activeCustomers?.metrics.map((metric, i) => (
@@ -320,9 +308,6 @@ function AudienceOverviewView({ reports }: { reports: AnyReport[] }) {
         <section className={styles.section}>
           <div className={styles.sectionHeader}>
             <h2 className={styles.sectionTitle}>Customer & geography breakdown</h2>
-            <div className={styles.sectionActions}>
-              {customerDistribution && <AISummaryPanel report={customerDistribution} />}
-            </div>
           </div>
           {customerDistribution?.table && (
             <div className={styles.tableSection}>
@@ -437,13 +422,6 @@ const IMPACT_SECTIONS: { title: string; dimensionHeader: string; rows: ImpactSec
   },
 ]
 
-const IMPACT_ANALYSIS_REPORT = {
-  id: 'impact-analysis',
-  title: 'Impact Analysis',
-  description: 'Repeat customers, loan volume, and resurrected users by product, region, age, and occupation. Highlights repeat engagement and average loan size across dimensions.',
-  metrics: [] as { label: string; value: string; change?: string; trend?: 'up' | 'down' }[],
-}
-
 function ImpactAnalysisView() {
   const [popup, setPopup] = useState<{ title: string } | null>(null)
 
@@ -456,9 +434,6 @@ function ImpactAnalysisView() {
         <section className={styles.section}>
           <div className={styles.sectionHeader}>
             <h2 className={styles.sectionTitle}>Impact analysis – overview</h2>
-            <div className={styles.sectionActions}>
-              <AISummaryPanel report={IMPACT_ANALYSIS_REPORT} />
-            </div>
           </div>
           <div className={styles.impactOverallMetrics}>
             <div className={styles.impactMetricCard}>
@@ -551,9 +526,6 @@ function DisbursementOverviewView({ reports }: { reports: AnyReport[] }) {
         <section className={styles.section}>
           <div className={styles.sectionHeader}>
             <h2 className={styles.sectionTitle}>Disbursement overview</h2>
-            <div className={styles.sectionActions}>
-              {disbursementMetrics && <AISummaryPanel report={disbursementMetrics} />}
-            </div>
           </div>
           <div className={styles.metricsGrid}>
             {disbursementMetrics?.metrics.map((metric, i) => (
@@ -565,9 +537,6 @@ function DisbursementOverviewView({ reports }: { reports: AnyReport[] }) {
         <section className={styles.section}>
           <div className={styles.sectionHeader}>
             <h2 className={styles.sectionTitle}>Product-wise split</h2>
-            <div className={styles.sectionActions}>
-              {disbursementMetrics && <AISummaryPanel report={disbursementMetrics} />}
-            </div>
           </div>
           {disbursementMetrics?.table && (
             <div className={styles.tableSection}>
@@ -613,10 +582,6 @@ function DisbursementOverviewView({ reports }: { reports: AnyReport[] }) {
         <section className={styles.section}>
           <div className={styles.sectionHeader}>
             <h2 className={styles.sectionTitle}>Eligibility and limit band usage</h2>
-            <div className={styles.sectionActions}>
-              {eligibilityBands && <AISummaryPanel report={eligibilityBands} />}
-              {loanLimitBands && <AISummaryPanel report={loanLimitBands} />}
-            </div>
           </div>
           {eligibilityBands?.table && (
             <div className={styles.tableSection}>
@@ -703,9 +668,6 @@ function RepaymentOverviewView({ reports }: { reports: AnyReport[] }) {
         <section className={styles.section}>
           <div className={styles.sectionHeader}>
             <h2 className={styles.sectionTitle}>Repayment KPIs</h2>
-            <div className={styles.sectionActions}>
-              {repaymentMetrics && <AISummaryPanel report={repaymentMetrics} />}
-            </div>
           </div>
           <div className={styles.metricsGrid}>
             {repaymentMetrics?.metrics.filter((m) => m.label === 'Repayment Rate').map((metric, i) => (
@@ -726,9 +688,6 @@ function RepaymentOverviewView({ reports }: { reports: AnyReport[] }) {
         <section className={styles.section}>
           <div className={styles.sectionHeader}>
             <h2 className={styles.sectionTitle}>Product-wise metrics</h2>
-            <div className={styles.sectionActions}>
-              {collectionByProduct && <AISummaryPanel report={collectionByProduct} />}
-            </div>
           </div>
           {collectionByProduct && (
             <div style={{ marginBottom: '1.5rem' }}>
@@ -764,9 +723,6 @@ function RepaymentOverviewView({ reports }: { reports: AnyReport[] }) {
         <section className={styles.section}>
           <div className={styles.sectionHeader}>
             <h2 className={styles.sectionTitle}>By loan status (open / closed)</h2>
-            <div className={styles.sectionActions}>
-              {byStatus && <AISummaryPanel report={byStatus} />}
-            </div>
           </div>
           {byStatus?.table && (
             <div className={styles.tableSection}>
@@ -803,9 +759,6 @@ function RepaymentOverviewView({ reports }: { reports: AnyReport[] }) {
         <section className={styles.section}>
           <div className={styles.sectionHeader}>
             <h2 className={styles.sectionTitle}>By due bands</h2>
-            <div className={styles.sectionActions}>
-              {byDueBands && <AISummaryPanel report={byDueBands} />}
-            </div>
           </div>
           {byDueBands?.table && (
             <div className={styles.tableSection}>
