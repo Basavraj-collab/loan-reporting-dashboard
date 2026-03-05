@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useState, useContext } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import { PortalOptionContext } from '../App'
 import { getReportsBySubSegment } from '../data/reports-new'
 import { MetricCard } from './MetricCard'
 import { DataPopup } from './DataPopup'
@@ -11,8 +12,18 @@ import {
 } from './ProductWiseViews'
 import styles from './BusinessDashboard.module.css'
 
+function formatCell(cell: string | number): string {
+  if (typeof cell === 'number') {
+    if (cell >= 1000000) return `$${(cell / 1000000).toFixed(1)}M`
+    if (cell >= 1000) return cell.toLocaleString()
+    return String(cell)
+  }
+  return String(cell)
+}
+
 export function BusinessDashboard() {
   const { segmentId, subSegmentId } = useParams<{ segmentId: string; subSegmentId: string }>()
+  const portalOption = useContext(PortalOptionContext)
   const reports = segmentId && subSegmentId ? getReportsBySubSegment(segmentId, subSegmentId) : []
 
   if (segmentId === 'banking-hygiene' && subSegmentId === 'banking-reports') {
@@ -34,6 +45,9 @@ export function BusinessDashboard() {
 
   if (segmentId === 'business-dashboard') {
     if (subSegmentId === 'business-health') {
+      if (portalOption === 3) {
+        return <BusinessHealthOption3View />
+      }
       return <BusinessHealthView reports={reports} />
     }
     if (subSegmentId === 'audience-overview') {
@@ -252,6 +266,354 @@ function BusinessHealthView({ reports }: { reports: AnyReport[] }) {
         </div>
 
         {renderTabContent()}
+      </div>
+    </div>
+  )
+}
+
+/** Option 3 only: Business Health with Key KPI & Performance distribution as two tabs (same as Option 1), then Audience / Disbursement / Repayment Overview as sections below */
+function BusinessHealthOption3View() {
+  const healthReports = getReportsBySubSegment('business-dashboard', 'business-health')
+  const audienceReports = getReportsBySubSegment('business-dashboard', 'audience-overview')
+  const disbursementReports = getReportsBySubSegment('business-dashboard', 'disbursement-overview')
+  const repaymentReports = getReportsBySubSegment('business-dashboard', 'repayment-overview')
+
+  const businessHealthReport = healthReports.find((r: AnyReport) => r.id === 'business-health-metrics')
+  const lendingRatiosReport = healthReports.find((r: AnyReport) => r.id === 'lending-ratios')
+  const performersReport = healthReports.find((r: AnyReport) => r.id === 'highest-lowest-performers')
+  const [activeTab, setActiveTab] = useState<'kpi' | 'performance'>('kpi')
+  const [performancePopup, setPerformancePopup] = useState<{ widgetIndex: number; row: 'highest' | 'lowest' } | null>(null)
+  const [expandedOverviews, setExpandedOverviews] = useState<Set<string>>(new Set(['audience', 'disbursement', 'repayment']))
+  const toggleOverview = (id: string) => {
+    setExpandedOverviews((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
+
+  const activeCustomers = audienceReports.find((r: AnyReport) => r.id === 'active-customers')
+  const customerDistribution = audienceReports.find((r: AnyReport) => r.id === 'customer-distribution')
+  const disbursementMetrics = disbursementReports.find((r: AnyReport) => r.id === 'disbursement-metrics')
+  const eligibilityBands = disbursementReports.find((r: AnyReport) => r.id === 'eligibility-band-distribution')
+  const loanLimitBands = disbursementReports.find((r: AnyReport) => r.id === 'loan-limit-distribution')
+  const repaymentMetrics = repaymentReports.find((r: AnyReport) => r.id === 'repayment-metrics')
+  const collectionMetrics = repaymentReports.find((r: AnyReport) => r.id === 'collection-metrics')
+  const npaOverview = repaymentReports.find((r: AnyReport) => r.id === 'npa-overview')
+  const byStatus = repaymentReports.find((r: AnyReport) => r.id === 'repayment-by-status')
+  const byDueBands = repaymentReports.find((r: AnyReport) => r.id === 'repayment-by-due-bands')
+  const collectionByProduct = getReportsBySubSegment('repayment', 'collection-analysis').find((r: AnyReport) => r.id === 'collection-by-product')
+  const riskByProduct = getReportsBySubSegment('repayment', 'risk-analysis').find((r: AnyReport) => r.id === 'risk-by-product')
+  const writeOffReport = getReportsBySubSegment('repayment', 'risk-analysis').find((r: AnyReport) => r.id === 'write-off-analysis')
+
+  const widgets = performersReport?.performanceWidgets ?? []
+  const fewRatios = lendingRatiosReport?.metrics?.slice(0, 3) ?? []
+
+  return (
+    <div className={styles.wrapper}>
+      <div className={styles.businessHealth}>
+        {/* Two side-by-side tabs same as Option 1: Key KPI | Performance distribution */}
+        <div className={styles.tabs}>
+          <button
+            type="button"
+            className={activeTab === 'kpi' ? styles.tabActive : styles.tab}
+            onClick={() => setActiveTab('kpi')}
+          >
+            Key KPI
+          </button>
+          <button
+            type="button"
+            className={activeTab === 'performance' ? styles.tabActive : styles.tab}
+            onClick={() => setActiveTab('performance')}
+          >
+            Performance distribution
+          </button>
+        </div>
+
+        {activeTab === 'kpi' && (
+          <section className={styles.section}>
+            <div className={styles.sectionHeader}>
+              <h2 className={styles.sectionTitle}>Key KPI</h2>
+              <div className={styles.sectionActions}>
+                <Link to="/segment/banking-hygiene/banking-reports" className={styles.navLink}>
+                  <span>View accounting detail and loan transaction hygiene</span>
+                  <span>→</span>
+                </Link>
+              </div>
+            </div>
+            <div className={styles.metricsGrid}>
+              {businessHealthReport?.metrics.map((metric: any, i: number) => (
+                <MetricCard key={`kpi-${i}`} metric={metric} report={businessHealthReport} />
+              ))}
+              {fewRatios.map((metric: any, i: number) => (
+                <MetricCard key={`ratio-${i}`} metric={metric} report={lendingRatiosReport} />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {activeTab === 'performance' && (
+          <section className={styles.section}>
+            <div className={styles.sectionHeader}>
+              <h2 className={styles.sectionTitle}>Performance distribution</h2>
+            </div>
+            <div className={styles.performanceWidgetsGrid}>
+              {widgets.map((w: any, i: number) => (
+                <div key={i} className={styles.performanceWidget}>
+                  <h3 className={styles.performanceWidgetTitle}>{w.metricCohort}</h3>
+                  <table className={styles.performanceMatrix} aria-label={`${w.metricCohort} – highest and lowest performer`}>
+                    <thead>
+                      <tr>
+                        <th className={styles.performanceMatrixTh} scope="col" />
+                        <th className={styles.performanceMatrixTh} scope="col">Value</th>
+                        <th className={styles.performanceMatrixTh} scope="col">% contribution</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td className={styles.performanceMatrixLabel}>Highest performer</td>
+                        <td className={styles.performanceMatrixValue}>
+                          <button type="button" className={styles.performanceMatrixValueBtn} onClick={() => setPerformancePopup({ widgetIndex: i, row: 'highest' })}>{w.highestPerformer}</button>
+                        </td>
+                        <td className={styles.performanceMatrixPct}>{w.highestContributionPct}</td>
+                      </tr>
+                      <tr>
+                        <td className={styles.performanceMatrixLabel}>Lowest performer</td>
+                        <td className={styles.performanceMatrixValue}>
+                          <button type="button" className={styles.performanceMatrixValueBtn} onClick={() => setPerformancePopup({ widgetIndex: i, row: 'lowest' })}>{w.lowestPerformer}</button>
+                        </td>
+                        <td className={styles.performanceMatrixPct}>{w.lowestContributionPct}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              ))}
+            </div>
+            {performancePopup !== null && performersReport?.rawData && (
+              <DataPopup
+                title={`${widgets[performancePopup.widgetIndex].metricCohort} – ${performancePopup.row === 'highest' ? 'Highest performer' : 'Lowest performer'}`}
+                data={performersReport.rawData}
+                onClose={() => setPerformancePopup(null)}
+              />
+            )}
+          </section>
+        )}
+
+        {/* Audience Overview section (below tabs) – collapsible */}
+        <section className={styles.section}>
+          <button
+            type="button"
+            className={styles.collapsibleOverviewHeader}
+            onClick={() => toggleOverview('audience')}
+            aria-expanded={expandedOverviews.has('audience')}
+          >
+            <span className={styles.collapsibleOverviewArrow} aria-hidden>
+              {expandedOverviews.has('audience') ? '▼' : '▶'}
+            </span>
+            <h2 className={styles.sectionTitle}>Audience Overview</h2>
+          </button>
+          {expandedOverviews.has('audience') && (
+          <div className={styles.collapsibleOverviewBody}>
+          <div className={styles.metricsGrid}>
+            {activeCustomers?.metrics.map((metric: any, i: number) => (
+              <MetricCard key={i} metric={metric} report={activeCustomers} />
+            ))}
+          </div>
+          {activeCustomers?.table && (
+            <div className={styles.tableSection}>
+              <table className={styles.table}>
+                <thead><tr>{activeCustomers.table.headers.map((h, i) => <th key={i}>{h}</th>)}</tr></thead>
+                <tbody>
+                  {activeCustomers.table.rows.map((row, i) => (
+                    <tr key={i}>{row.map((cell, j) => <td key={j}>{formatCell(cell)}</td>)}</tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+          {customerDistribution?.table && (
+            <>
+              <h3 className={styles.sectionTitle} style={{ marginTop: '1rem', fontSize: '1rem' }}>Customer & geography breakdown</h3>
+              <div className={styles.tableSection}>
+                <table className={styles.table}>
+                  <thead><tr>{customerDistribution.table.headers.map((h, i) => <th key={i}>{h}</th>)}</tr></thead>
+                  <tbody>
+                    {customerDistribution.table.rows.map((row, i) => (
+                      <tr key={i}>{row.map((cell, j) => <td key={j}>{formatCell(cell)}</td>)}</tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div className={styles.sectionActions}>
+                <Link to="/segment/marketing-audience/audience-intelligence" className={styles.navLink}>
+                  <span>View detailed customer-attributes analysis</span><span>→</span>
+                </Link>
+              </div>
+            </>
+          )}
+          </div>
+          )}
+        </section>
+
+        {/* 4. Disbursement Overview – collapsible */}
+        <section className={styles.section}>
+          <button
+            type="button"
+            className={styles.collapsibleOverviewHeader}
+            onClick={() => toggleOverview('disbursement')}
+            aria-expanded={expandedOverviews.has('disbursement')}
+          >
+            <span className={styles.collapsibleOverviewArrow} aria-hidden>
+              {expandedOverviews.has('disbursement') ? '▼' : '▶'}
+            </span>
+            <h2 className={styles.sectionTitle}>Disbursement Overview</h2>
+          </button>
+          {expandedOverviews.has('disbursement') && (
+          <div className={styles.collapsibleOverviewBody}>
+          <div className={styles.metricsGrid}>
+            {disbursementMetrics?.metrics.map((metric: any, i: number) => (
+              <MetricCard key={i} metric={metric} report={disbursementMetrics} />
+            ))}
+          </div>
+          {disbursementMetrics?.table && (
+            <>
+              <h3 className={styles.sectionTitle} style={{ marginTop: '1rem', fontSize: '1rem' }}>Product-wise split</h3>
+              <div className={styles.tableSection}>
+                <table className={styles.table}>
+                  <thead><tr>{disbursementMetrics.table.headers.map((h, i) => <th key={i}>{h}</th>)}</tr></thead>
+                  <tbody>
+                    {disbursementMetrics.table.rows.map((row, i) => (
+                      <tr key={i}>{row.map((cell, j) => <td key={j}>{formatCell(cell)}</td>)}</tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div className={styles.sectionActions}>
+                <Link to="/segment/disbursement/loan-product-analysis" className={styles.navLink}>
+                  <span>View detailed product-wise analysis</span><span>→</span>
+                </Link>
+              </div>
+            </>
+          )}
+          {eligibilityBands?.table && (
+            <>
+              <h3 className={styles.sectionTitle} style={{ marginTop: '1rem', fontSize: '1rem' }}>Eligibility and limit band usage</h3>
+              <div className={styles.tableSection}>
+                <table className={styles.table}>
+                  <thead><tr>{eligibilityBands.table.headers.map((h, i) => <th key={i}>{h}</th>)}</tr></thead>
+                  <tbody>
+                    {eligibilityBands.table.rows.map((row, i) => (
+                      <tr key={i}>{row.map((cell, j) => <td key={j}>{formatCell(cell)}</td>)}</tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
+          )}
+          {loanLimitBands?.table && (
+            <div className={styles.tableSection}>
+              <table className={styles.table}>
+                <thead><tr>{loanLimitBands.table.headers.map((h, i) => <th key={i}>{h}</th>)}</tr></thead>
+                <tbody>
+                  {loanLimitBands.table.rows.map((row, i) => (
+                    <tr key={i}>{row.map((cell, j) => <td key={j}>{formatCell(cell)}</td>)}</tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+          </div>
+          )}
+        </section>
+
+        {/* 5. Repayment Overview – collapsible */}
+        <section className={styles.section}>
+          <button
+            type="button"
+            className={styles.collapsibleOverviewHeader}
+            onClick={() => toggleOverview('repayment')}
+            aria-expanded={expandedOverviews.has('repayment')}
+          >
+            <span className={styles.collapsibleOverviewArrow} aria-hidden>
+              {expandedOverviews.has('repayment') ? '▼' : '▶'}
+            </span>
+            <h2 className={styles.sectionTitle}>Repayment Overview</h2>
+          </button>
+          {expandedOverviews.has('repayment') && (
+          <div className={styles.collapsibleOverviewBody}>
+          <div className={styles.metricsGrid}>
+            {repaymentMetrics?.metrics.filter((m: any) => m.label === 'Repayment Rate').map((metric: any, i: number) => (
+              <MetricCard key={`rr-${i}`} metric={metric} report={repaymentMetrics} />
+            ))}
+            {collectionMetrics?.metrics.filter((m: any) => m.label === 'Collection Efficiency').map((metric: any, i: number) => (
+              <MetricCard key={`ce-${i}`} metric={metric} report={collectionMetrics} />
+            ))}
+            {npaOverview?.metrics.map((metric: any, i: number) => (
+              <MetricCard key={`npa-${i}`} metric={metric} report={npaOverview} />
+            ))}
+            {writeOffReport?.metrics.filter((m: any) => m.label === 'Write-off Rate').map((metric: any, i: number) => (
+              <MetricCard key={`wo-${i}`} metric={metric} report={writeOffReport} />
+            ))}
+          </div>
+          {collectionByProduct && (
+            <div style={{ marginBottom: '1.5rem' }}>
+              <h3 style={{ fontSize: '0.95rem', fontWeight: 600, marginBottom: '0.75rem', color: 'var(--text-secondary)' }}>Collection by Product</h3>
+              <div className={styles.metricsGrid}>
+                {collectionByProduct.metrics.map((metric: any, i: number) => (
+                  <MetricCard key={i} metric={metric} report={collectionByProduct} />
+                ))}
+              </div>
+            </div>
+          )}
+          {riskByProduct && (
+            <div style={{ marginBottom: '1.5rem' }}>
+              <h3 style={{ fontSize: '0.95rem', fontWeight: 600, marginBottom: '0.75rem', color: 'var(--text-secondary)' }}>NPA by Product</h3>
+              <div className={styles.metricsGrid}>
+                {riskByProduct.metrics.map((metric: any, i: number) => (
+                  <MetricCard key={i} metric={metric} report={riskByProduct} />
+                ))}
+              </div>
+            </div>
+          )}
+          <div className={styles.sectionActions}>
+            <Link to="/segment/repayment/collection-analysis" className={styles.navLink}>
+              <span>View detailed product-wise analysis</span><span>→</span>
+            </Link>
+          </div>
+          {byStatus?.table && (
+            <>
+              <h3 className={styles.sectionTitle} style={{ marginTop: '1rem', fontSize: '1rem' }}>By loan status (open / closed)</h3>
+              <div className={styles.tableSection}>
+                <table className={styles.table}>
+                  <thead><tr>{byStatus.table.headers.map((h, i) => <th key={i}>{h}</th>)}</tr></thead>
+                  <tbody>
+                    {byStatus.table.rows.map((row, i) => (
+                      <tr key={i}>{row.map((cell, j) => <td key={j}>{formatCell(cell)}</td>)}</tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
+          )}
+          {byDueBands?.table && (
+            <>
+              <h3 className={styles.sectionTitle} style={{ marginTop: '1rem', fontSize: '1rem' }}>By due bands</h3>
+              <div className={styles.tableSection}>
+                <table className={styles.table}>
+                  <thead><tr>{byDueBands.table.headers.map((h, i) => <th key={i}>{h}</th>)}</tr></thead>
+                  <tbody>
+                    {byDueBands.table.rows.map((row, i) => (
+                      <tr key={i}>{row.map((cell, j) => <td key={j}>{formatCell(cell)}</td>)}</tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
+          )}
+          </div>
+          )}
+        </section>
       </div>
     </div>
   )

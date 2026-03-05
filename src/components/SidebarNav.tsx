@@ -3,7 +3,12 @@ import { Link, useLocation } from 'react-router-dom'
 import { segments } from '../data/navigation'
 import styles from './SidebarNav.module.css'
 
-export function SidebarNav() {
+interface SidebarNavProps {
+  /** When true, Business Dashboard shows only "Business Health" in the list (Option 3) */
+  collapseBusinessDashboardToHealthOnly?: boolean
+}
+
+export function SidebarNav({ collapseBusinessDashboardToHealthOnly }: SidebarNavProps = {}) {
   const location = useLocation()
 
   const [isReportsExpanded, setIsReportsExpanded] = useState(true)
@@ -62,7 +67,10 @@ export function SidebarNav() {
                   </button>
                   {isExpanded && (
                     <div className={styles.subSegments}>
-                      {segment.subSegments.map((subSegment) => {
+                      {(collapseBusinessDashboardToHealthOnly && segment.id === 'business-dashboard'
+                        ? segment.subSegments.filter((s) => s.id === 'business-health')
+                        : segment.subSegments
+                      ).map((subSegment) => {
                         const isActive = isSegmentActive(segment.id, subSegment.id)
                         return (
                           <Link
