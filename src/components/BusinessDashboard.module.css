@@ -99,6 +99,39 @@
   margin-top: 1rem;
 }
 
+/* Option 3: Key KPI two-layer layout */
+.kpiOption3Layer1 {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1rem;
+}
+
+.kpiOption3Layer2 {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.kpiOption3MetricRow {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.kpiOption3Label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.kpiOption3Value {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
 .sectionActions {
   display: flex;
   align-items: center;

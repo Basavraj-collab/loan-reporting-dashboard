@@ -308,7 +308,6 @@ function BusinessHealthOption3View() {
   const writeOffReport = getReportsBySubSegment('repayment', 'risk-analysis').find((r: AnyReport) => r.id === 'write-off-analysis')
 
   const widgets = performersReport?.performanceWidgets ?? []
-  const fewRatios = lendingRatiosReport?.metrics?.slice(0, 3) ?? []
 
   return (
     <div className={styles.wrapper}>
@@ -342,13 +341,38 @@ function BusinessHealthOption3View() {
                 </Link>
               </div>
             </div>
-            <div className={styles.metricsGrid}>
-              {businessHealthReport?.metrics.map((metric: any, i: number) => (
-                <MetricCard key={`kpi-${i}`} metric={metric} report={businessHealthReport} />
-              ))}
-              {fewRatios.map((metric: any, i: number) => (
-                <MetricCard key={`ratio-${i}`} metric={metric} report={lendingRatiosReport} />
-              ))}
+            {/* Option 3: First layer – Yield, Disbursement, Collection, Collection efficiency, Default rate, NPA % */}
+            <div className={styles.kpiOption3Layer1}>
+              {businessHealthReport?.metrics
+                .filter((m: any) => ['Yield', 'Disbursement', 'Collection', 'NPA', 'Default rate'].includes(m.label))
+                .map((metric: any, i: number) => (
+                  <MetricCard key={`kpi1-${i}`} metric={{ ...metric, label: metric.label === 'NPA' ? 'NPA %' : metric.label }} report={businessHealthReport} />
+                ))}
+              {lendingRatiosReport?.metrics
+                .filter((m: any) => m.label === 'Collection efficiency')
+                .map((metric: any, i: number) => (
+                  <MetricCard key={`kpi1-ce-${i}`} metric={metric} report={lendingRatiosReport} />
+                ))}
+            </div>
+          </section>
+        )}
+
+        {/* Option 3: Second layer box – separate from first layer, between Key KPI and Audience Overview */}
+        {activeTab === 'kpi' && (
+          <section className={styles.section}>
+            <div className={styles.kpiOption3Layer2}>
+              <div className={styles.kpiOption3MetricRow}>
+                <span className={styles.kpiOption3Label}>Eligible customers</span>
+                <span className={styles.kpiOption3Value}>12,450</span>
+              </div>
+              <div className={styles.kpiOption3MetricRow}>
+                <span className={styles.kpiOption3Label}>Opted-in %</span>
+                <span className={styles.kpiOption3Value}>72%</span>
+              </div>
+              <div className={styles.kpiOption3MetricRow}>
+                <span className={styles.kpiOption3Label}>Uptake % - ATS</span>
+                <span className={styles.kpiOption3Value}>68% - 2.4 hrs</span>
+              </div>
             </div>
           </section>
         )}
