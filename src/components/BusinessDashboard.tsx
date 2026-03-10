@@ -45,7 +45,7 @@ export function BusinessDashboard() {
 
   if (segmentId === 'business-dashboard') {
     if (subSegmentId === 'business-health') {
-      if (portalOption === 3) {
+      if (portalOption === 2 || portalOption === 3) {
         return <BusinessHealthOption3View />
       }
       return <BusinessHealthView reports={reports} />
@@ -341,37 +341,56 @@ function BusinessHealthOption3View() {
                 </Link>
               </div>
             </div>
-            {/* Option 3: First layer – Yield, Disbursement, Collection, Collection efficiency, Default rate, NPA % */}
-            <div className={styles.kpiOption3Layer1}>
-              {businessHealthReport?.metrics
-                .filter((m: any) => ['Yield', 'Disbursement', 'Collection', 'NPA', 'Default rate'].includes(m.label))
-                .map((metric: any, i: number) => (
-                  <MetricCard key={`kpi1-${i}`} metric={{ ...metric, label: metric.label === 'NPA' ? 'NPA %' : metric.label }} report={businessHealthReport} />
-                ))}
-              {lendingRatiosReport?.metrics
-                .filter((m: any) => m.label === 'Collection efficiency')
-                .map((metric: any, i: number) => (
-                  <MetricCard key={`kpi1-ce-${i}`} metric={metric} report={lendingRatiosReport} />
-                ))}
+            {/* First layer: initial KPIs only, in their own box */}
+            <div className={styles.kpiOption3Layer1Box}>
+              <div className={styles.kpiOption3Layer1}>
+                {businessHealthReport?.metrics
+                  .filter((m: any) => ['Yield', 'Disbursement', 'Collection', 'NPA', 'Default rate'].includes(m.label))
+                  .map((metric: any, i: number) => (
+                    <MetricCard key={`kpi1-${i}`} metric={{ ...metric, label: metric.label === 'NPA' ? 'NPA %' : metric.label }} report={businessHealthReport} />
+                  ))}
+                {lendingRatiosReport?.metrics
+                  .filter((m: any) => m.label === 'Collection efficiency')
+                  .map((metric: any, i: number) => (
+                    <MetricCard key={`kpi1-ce-${i}`} metric={metric} report={lendingRatiosReport} />
+                  ))}
+              </div>
             </div>
-          </section>
-        )}
-
-        {/* Option 3: Second layer box – separate from first layer, between Key KPI and Audience Overview */}
-        {activeTab === 'kpi' && (
-          <section className={styles.section}>
-            <div className={styles.kpiOption3Layer2}>
-              <div className={styles.kpiOption3MetricRow}>
-                <span className={styles.kpiOption3Label}>Eligible customers</span>
-                <span className={styles.kpiOption3Value}>12,450</span>
-              </div>
-              <div className={styles.kpiOption3MetricRow}>
-                <span className={styles.kpiOption3Label}>Opted-in %</span>
-                <span className={styles.kpiOption3Value}>72%</span>
-              </div>
-              <div className={styles.kpiOption3MetricRow}>
-                <span className={styles.kpiOption3Label}>Uptake % - ATS</span>
-                <span className={styles.kpiOption3Value}>68% - 2.4 hrs</span>
+            {/* Second layer: separate box below first layer; left/right KPI structure preserved */}
+            <div className={styles.kpiOption3Layer2Box}>
+              <div className={styles.kpiOption3Layer2}>
+                <div className={styles.kpiOption3Col}>
+                  <div className={styles.kpiOption3MetricRow}>
+                    <span className={styles.kpiOption3Label}>Eligible customers</span>
+                    <span className={styles.kpiOption3Value}>12,450</span>
+                  </div>
+                  <div className={styles.kpiOption3MetricRow}>
+                    <span className={styles.kpiOption3Label}>Opted-in %</span>
+                    <span className={styles.kpiOption3Value}>8,964 (72%)</span>
+                  </div>
+                  <div className={styles.kpiOption3MetricRow}>
+                    <span className={styles.kpiOption3Label}>Uptake % - ATS</span>
+                    <span className={styles.kpiOption3Value}>8,466 (68%) - $2.4</span>
+                  </div>
+                </div>
+                <div className={styles.kpiOption3Col}>
+                  <div className={styles.kpiOption3MetricRow}>
+                    <span className={styles.kpiOption3Label}>Total failed transactions</span>
+                    <span className={styles.kpiOption3Value}>1,120</span>
+                  </div>
+                  <div className={styles.kpiOption3MetricRow}>
+                    <span className={styles.kpiOption3Label}>Total failed eligible transactions</span>
+                    <span className={styles.kpiOption3Value}>420 (37%)</span>
+                  </div>
+                  <div className={styles.kpiOption3MetricRow}>
+                    <span className={styles.kpiOption3Label}>Total eligible shown interest transactions</span>
+                    <span className={styles.kpiOption3Value}>860 (69%)</span>
+                  </div>
+                  <div className={styles.kpiOption3MetricRow}>
+                    <span className={styles.kpiOption3Label}>Transaction conversion</span>
+                    <span className={styles.kpiOption3Value}>640 (52%)</span>
+                  </div>
+                </div>
               </div>
             </div>
           </section>

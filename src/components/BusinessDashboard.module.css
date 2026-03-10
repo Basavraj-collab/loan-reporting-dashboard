@@ -99,17 +99,33 @@
   margin-top: 1rem;
 }
 
-/* Option 3: Key KPI two-layer layout */
+/* Option 3: Key KPI – first layer own box; second layer separate box below with left/right structure */
+.kpiOption3Layer1Box {
+  padding: 1rem;
+  background: var(--card-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  margin-bottom: 1rem;
+}
+
 .kpiOption3Layer1 {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
   gap: 1rem;
 }
 
+.kpiOption3Layer2Box {
+  padding: 1rem;
+  background: var(--card-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+}
+
 .kpiOption3Layer2 {
   display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 2rem;
 }
 
 .kpiOption3MetricRow {
@@ -387,3 +403,31 @@
 .impactValueBtn:hover {
   color: var(--text-primary);
 }
+
+
+.kpiOption3Layer2 {
+  display: flex;
+  gap: 2.5rem;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.kpiOption3Col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.kpiOption3Layer2 {
+  display: flex;
+  gap: 2.5rem;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.kpiOption3Col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+

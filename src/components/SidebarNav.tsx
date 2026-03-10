@@ -1,14 +1,16 @@
 import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { segments } from '../data/navigation'
+import { segments as defaultSegments, type Segment } from '../data/navigation'
 import styles from './SidebarNav.module.css'
 
 interface SidebarNavProps {
+  /** When provided, use these segments instead of default (e.g. Option 2: no Marketing & Audience, renamed Audience) */
+  segments?: Segment[]
   /** When true, Business Dashboard shows only "Business Health" in the list (Option 3) */
   collapseBusinessDashboardToHealthOnly?: boolean
 }
 
-export function SidebarNav({ collapseBusinessDashboardToHealthOnly }: SidebarNavProps = {}) {
+export function SidebarNav({ segments = defaultSegments, collapseBusinessDashboardToHealthOnly }: SidebarNavProps = {}) {
   const location = useLocation()
 
   const [isReportsExpanded, setIsReportsExpanded] = useState(true)

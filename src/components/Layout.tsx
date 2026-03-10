@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
+import type { Segment } from '../data/navigation'
 import { SidebarNav } from './SidebarNav'
 import { DateRangeSelector } from './DateRangeSelector'
 import styles from './Layout.module.css'
@@ -8,9 +9,11 @@ const LOAN_PRODUCTS = ['Loan product 1', 'Loan product 2', 'Loan product 3']
 
 interface LayoutProps {
   children: React.ReactNode
+  /** When provided, sidebar shows these segments (e.g. Option 2: no Marketing & Audience, renamed Audience) */
+  segments?: Segment[]
 }
 
-export function Layout({ children }: LayoutProps) {
+export function Layout({ children, segments }: LayoutProps) {
   const location = useLocation()
   const [selectedLoanProduct, setSelectedLoanProduct] = useState(LOAN_PRODUCTS[0])
 
@@ -21,7 +24,7 @@ export function Layout({ children }: LayoutProps) {
           <span className={styles.logoIcon}>◈</span>
           <span>Loan Reports</span>
         </div>
-        <SidebarNav />
+        <SidebarNav segments={segments} />
       </aside>
       <main className={styles.main}>
         <div className={styles.headerRow}>

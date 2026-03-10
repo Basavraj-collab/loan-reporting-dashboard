@@ -173,3 +173,20 @@ export function getSubSegmentById(segmentId: string, subSegmentId: string): SubS
   const segment = getSegmentById(segmentId)
   return segment?.subSegments.find((s) => s.id === subSegmentId)
 }
+
+/** Option 2: same structure as reports but without Marketing & Audience Intelligence; Business Dashboard sub-segment "Audience Overview" renamed to "Audience & Transaction" */
+export function getOption2Segments(): Segment[] {
+  return segments
+    .filter((s) => s.id !== 'marketing-audience')
+    .map((seg) => {
+      if (seg.id !== 'business-dashboard') return seg
+      return {
+        ...seg,
+        subSegments: seg.subSegments.map((sub) =>
+          sub.id === 'audience-overview'
+            ? { ...sub, name: 'Audience & Transaction' }
+            : sub
+        ),
+      }
+    })
+}
