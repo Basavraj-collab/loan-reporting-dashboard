@@ -374,6 +374,7 @@ function BusinessHealthOption3View() {
                   </div>
                 </div>
                 <div className={styles.kpiOption3Col}>
+                  <div className={styles.kpiOption3ColHeading}>Transaction level</div>
                   <div className={styles.kpiOption3MetricRow}>
                     <span className={styles.kpiOption3Label}>Total failed transactions</span>
                     <span className={styles.kpiOption3Value}>1,120</span>
