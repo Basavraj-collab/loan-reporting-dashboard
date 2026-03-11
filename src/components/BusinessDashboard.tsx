@@ -394,6 +394,175 @@ function BusinessHealthOption3View() {
                 </div>
               </div>
             </div>
+
+            {/* Disbursal funnel projection table (static example, following the provided sheet) */}
+            <div className={styles.funnelProjectionBox}>
+              <h3 className={styles.sectionTitle} style={{ fontSize: '1rem', marginBottom: '0.75rem' }}>
+                Disbursal funnel projection – FY 2025–26
+              </h3>
+              <div className={styles.tableSection}>
+                <table className={styles.table}>
+                  <thead>
+                    <tr>
+                      <th>Disbursal Month</th>
+                      <th>Eligible Base (split 50% across 7-day &amp; 14-day)</th>
+                      <th>Cx Uptake</th>
+                      <th># of borrowers (7-day &amp; 14-day combined)</th>
+                      <th>Average Ticket Size (TSH)</th>
+                      <th>Disbursals (TSH) – combined</th>
+                      <th>Principal Repayment (Maturity) – Overall</th>
+                      <th>Principal Repayment (Maturity) – 7-day</th>
+                      <th>Principal Repayment (Maturity) – 14-day</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>M1 (Aug-25)</td>
+                      <td>500 K</td>
+                      <td>10.00%</td>
+                      <td>50 K</td>
+                      <td>11,500</td>
+                      <td>0.6 Bn</td>
+                      <td>90.50%</td>
+                      <td>91.50%</td>
+                      <td>90.00%</td>
+                    </tr>
+                    <tr>
+                      <td>M2 (Sep-25)</td>
+                      <td>500 K</td>
+                      <td>15.00%</td>
+                      <td>75 K</td>
+                      <td>11,500</td>
+                      <td>0.9 Bn</td>
+                      <td>90.50%</td>
+                      <td>91.50%</td>
+                      <td>90.00%</td>
+                    </tr>
+                    <tr>
+                      <td>M3 (Oct-25)</td>
+                      <td>1.0 Mn</td>
+                      <td>20.00%</td>
+                      <td>201 K</td>
+                      <td>11,500</td>
+                      <td>2.3 Bn</td>
+                      <td>90.50%</td>
+                      <td>91.50%</td>
+                      <td>90.00%</td>
+                    </tr>
+                    <tr>
+                      <td>M4 (Nov-25)</td>
+                      <td>1.0 Mn</td>
+                      <td>20.20%</td>
+                      <td>204 K</td>
+                      <td>11,750</td>
+                      <td>2.4 Bn</td>
+                      <td>90.50%</td>
+                      <td>91.50%</td>
+                      <td>90.00%</td>
+                    </tr>
+                    <tr>
+                      <td>M5 (Dec-25)</td>
+                      <td>2.0 Mn</td>
+                      <td>20.40%</td>
+                      <td>418 K</td>
+                      <td>12,750</td>
+                      <td>5.3 Bn</td>
+                      <td>90.50%</td>
+                      <td>91.50%</td>
+                      <td>90.00%</td>
+                    </tr>
+                    <tr>
+                      <td>M6 (Jan-25)</td>
+                      <td>2.1 Mn</td>
+                      <td>20.60%</td>
+                      <td>426 K</td>
+                      <td>12,679</td>
+                      <td>5.4 Bn</td>
+                      <td>90.50%</td>
+                      <td>91.50%</td>
+                      <td>90.00%</td>
+                    </tr>
+                    <tr>
+                      <td>M7 (Feb-25)</td>
+                      <td>2.1 Mn</td>
+                      <td>20.80%</td>
+                      <td>439 K</td>
+                      <td>13,178</td>
+                      <td>5.8 Bn</td>
+                      <td>90.50%</td>
+                      <td>91.50%</td>
+                      <td>90.00%</td>
+                    </tr>
+                    <tr>
+                      <td>M8 (Mar-25)</td>
+                      <td>2.2 Mn</td>
+                      <td>21.00%</td>
+                      <td>452 K</td>
+                      <td>13,978</td>
+                      <td>6.3 Bn</td>
+                      <td>90.50%</td>
+                      <td>91.50%</td>
+                      <td>90.00%</td>
+                    </tr>
+                    <tr>
+                      <td>M9 (Apr-25)</td>
+                      <td>2.2 Mn</td>
+                      <td>21.20%</td>
+                      <td>466 K</td>
+                      <td>15,417</td>
+                      <td>7.1 Bn</td>
+                      <td>90.50%</td>
+                      <td>91.50%</td>
+                      <td>90.00%</td>
+                    </tr>
+                    <tr>
+                      <td>M10 (May-25)</td>
+                      <td>2.2 Mn</td>
+                      <td>21.40%</td>
+                      <td>480 K</td>
+                      <td>16,091</td>
+                      <td>7.7 Bn</td>
+                      <td>90.50%</td>
+                      <td>91.50%</td>
+                      <td>90.00%</td>
+                    </tr>
+                    <tr>
+                      <td>M11 (Jun-25)</td>
+                      <td>2.3 Mn</td>
+                      <td>21.70%</td>
+                      <td>495 K</td>
+                      <td>16,481</td>
+                      <td>8.0 Bn</td>
+                      <td>90.50%</td>
+                      <td>91.50%</td>
+                      <td>90.00%</td>
+                    </tr>
+                    <tr>
+                      <td>M12 (Jul-25)</td>
+                      <td>2.3 Mn</td>
+                      <td>21.90%</td>
+                      <td>510 K</td>
+                      <td>16,991</td>
+                      <td>8.4 Bn</td>
+                      <td>90.50%</td>
+                      <td>91.50%</td>
+                      <td>90.00%</td>
+                    </tr>
+                    <tr>
+                      <td><strong>FY 2025–26</strong></td>
+                      <td>-</td>
+                      <td>-</td>
+                      <td>-</td>
+                      <td>-</td>
+                      <td><strong>59.6 Bn</strong></td>
+                      <td><strong>90.50%</strong></td>
+                      <td><strong>91.50%</strong></td>
+                      <td><strong>90.00%</strong></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </section>
         )}
 
