@@ -51,6 +51,7 @@ function App() {
         {portalOption === 1 && <Layout>{appRoutes}</Layout>}
         {portalOption === 2 && <Option2Layout>{appRoutes}</Option2Layout>}
         {portalOption === 3 && <Option3Layout>{appRoutes}</Option3Layout>}
+        {portalOption === 4 && <div />}
       </div>
     </PortalOptionContext.Provider>
   )

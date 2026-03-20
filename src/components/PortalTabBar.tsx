@@ -1,6 +1,6 @@
 import styles from './PortalTabBar.module.css'
 
-export type PortalOption = 1 | 2 | 3
+export type PortalOption = 1 | 2 | 3 | 4
 
 interface PortalTabBarProps {
   selected: PortalOption
@@ -32,11 +32,19 @@ export function PortalTabBar({ selected, onSelect }: PortalTabBarProps) {
         >
           Option 3
         </button>
+        <button
+          type="button"
+          className={selected === 4 ? styles.tabActive : styles.tab}
+          onClick={() => onSelect(4)}
+        >
+          Option 4
+        </button>
       </div>
       <span className={styles.badge}>
         {selected === 1 && 'Sidebar navigation'}
         {selected === 2 && 'Top dropdown navigation'}
         {selected === 3 && 'Breadcrumb + sub-nav'}
+        {selected === 4 && 'Empty view'}
       </span>
     </div>
   )
