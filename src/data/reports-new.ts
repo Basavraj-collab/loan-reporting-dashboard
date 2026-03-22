@@ -33,7 +33,7 @@ export const reports: Report[] = [
       { label: 'Disbursement', value: '$24.2M', change: '+9%', trend: 'up', clickable: true, linkTo: 'popup:' },
       { label: 'Repayment rate', value: '94.2%', change: '+1.2%', trend: 'up' },
       { label: 'Collection', value: '$23.4M', change: '+8%', trend: 'up' },
-      { label: 'NPA', value: '1.2%', change: '-0.1%', trend: 'up' },
+      { label: 'Amount to be collected', value: '$28.5M', change: '+2.1%', trend: 'up' },
       { label: 'Default rate', value: '0.6%', change: '-0.1%', trend: 'up' },
       { label: 'Eligible to opt-in', value: '72%', change: '+2%', trend: 'up' },
       { label: 'Loan taken to eligible', value: '0.85x', change: '+0.02', trend: 'up' },

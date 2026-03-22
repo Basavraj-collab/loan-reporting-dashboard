@@ -1,4 +1,4 @@
-import { createContext, useState } from 'react'
+import { createContext, useState, useEffect } from 'react'
 import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom'
 import { segments } from './data/navigation'
 import { Layout } from './components/Layout'
@@ -19,21 +19,51 @@ const OPTION3_DEFAULT_PATH =
     ? `/segment/${defaultSegment.id}/${defaultSubSegment.id}`
     : '/segment/business-dashboard/business-health'
 
+const PORTAL_STORAGE_KEY = 'loan-dashboard-portal-option'
+
+function parsePortalOption(value: string | null): PortalOption | null {
+  if (value === '1' || value === '2' || value === '3' || value === '4') return Number(value) as PortalOption
+  return null
+}
+
+function readInitialPortalOption(): PortalOption {
+  if (typeof window === 'undefined') return 1
+  const fromUrl = parsePortalOption(new URLSearchParams(window.location.search).get('portal'))
+  if (fromUrl != null) return fromUrl
+  const fromStorage = parsePortalOption(localStorage.getItem(PORTAL_STORAGE_KEY))
+  if (fromStorage != null) return fromStorage
+  // Dev: default to Option 3 so Business Health funnel (Options 2 & 3) is visible without extra clicks
+  if (import.meta.env.DEV) return 3
+  return 1
+}
+
+/** Preserves ?portal=2 etc. when redirecting from / to Business Health */
+function RootRedirectToBusinessHealth() {
+  const location = useLocation()
+  return (
+    <Navigate to={{ pathname: '/segment/business-dashboard/business-health', search: location.search }} replace />
+  )
+}
+
 const appRoutes = (
   <Routes>
-    <Route path="/" element={<Navigate to="/segment/business-dashboard/business-health" replace />} />
+    <Route path="/" element={<RootRedirectToBusinessHealth />} />
     <Route path="/hub" element={<ReportHub />} />
     <Route path="/pinned" element={<PinnedReports />} />
     <Route path="/segment/:segmentId/:subSegmentId" element={<BusinessDashboard />} />
     <Route path="/report/:reportId" element={<SegmentView />} />
-    <Route path="*" element={<Navigate to="/segment/business-dashboard/business-health" replace />} />
+    <Route path="*" element={<RootRedirectToBusinessHealth />} />
   </Routes>
 )
 
 function App() {
-  const [portalOption, setPortalOption] = useState<PortalOption>(1)
+  const [portalOption, setPortalOption] = useState<PortalOption>(readInitialPortalOption)
   const navigate = useNavigate()
   const location = useLocation()
+
+  useEffect(() => {
+    localStorage.setItem(PORTAL_STORAGE_KEY, String(portalOption))
+  }, [portalOption])
 
   const handlePortalSelect = (option: PortalOption) => {
     setPortalOption(option)

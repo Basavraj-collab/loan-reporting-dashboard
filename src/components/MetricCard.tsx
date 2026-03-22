@@ -11,6 +11,8 @@ interface MetricCardProps {
     trend?: 'up' | 'down'
     clickable?: boolean
     linkTo?: string
+    /** Optional target shown under the main value (e.g. Disbursement KPI) */
+    target?: string
   }
   report?: any
 }
@@ -44,6 +46,9 @@ export function MetricCard({ metric, report }: MetricCardProps) {
             </span>
           )}
         </div>
+        {metric.target != null && metric.target !== '' && (
+          <div className={styles.metricTarget}>Target: {metric.target}</div>
+        )}
       </div>
       {showPopup && report?.rawData && (
         <DataPopup

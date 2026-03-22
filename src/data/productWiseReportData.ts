@@ -121,6 +121,15 @@ export function getDisbursementProductData(): ProductWiseSectionData[] {
   }))
 }
 
+/** Single variant (3 / 6 / 9 Month) — same blocks as Loan Product Wise Analysis → Disbursement */
+export function getDisbursementProductSection(productType: string): ProductWiseSectionData | undefined {
+  return getDisbursementProductData().find((s) => s.productType === productType)
+}
+
+export function isDisbursementVariantProductLabel(value: unknown): value is string {
+  return typeof value === 'string' && (DISBURSEMENT_PRODUCT_TYPES as readonly string[]).includes(value)
+}
+
 // ---------- Collection: product types and metrics ----------
 export const COLLECTION_PRODUCT_TYPES = ['3 Month', '6 Month', '9 Month'] as const
 
@@ -250,3 +259,98 @@ export function getRiskProductData(): ProductWiseSectionData[] {
     dimensionMetrics: riskDimensionMetrics(),
   }))
 }
+
+/** Single variant — same blocks as Loan Product Wise Analysis → Collection */
+export function getCollectionProductSection(productType: string): ProductWiseSectionData | undefined {
+  return getCollectionProductData().find((s) => s.productType === productType)
+}
+
+/** Single variant — same blocks as Loan Product Wise Analysis → Risk */
+export function getRiskProductSection(productType: string): ProductWiseSectionData | undefined {
+  return getRiskProductData().find((s) => s.productType === productType)
+}
+
+export function isRepaymentVariantProductLabel(value: unknown): value is string {
+  return typeof value === 'string' && (COLLECTION_PRODUCT_TYPES as readonly string[]).includes(value)
+}
+
+/** Option 2 & 3 — Repayment overview summary tables (Business Health) */
+export interface RepaymentOverviewProductKpiRow {
+  variant: string
+  collection: string
+  defaultRate: string
+  writeOffLoans: number
+  closedLoans: number
+  openLoans: number
+  amountToBeCollected: string
+}
+
+export const REPAYMENT_OVERVIEW_PRODUCT_KPI_ROWS: RepaymentOverviewProductKpiRow[] = [
+  {
+    variant: '3 Month',
+    collection: '96.8%',
+    defaultRate: '0.9%',
+    writeOffLoans: 12,
+    closedLoans: 892,
+    openLoans: 328,
+    amountToBeCollected: '₹4.20 Cr',
+  },
+  {
+    variant: '6 Month',
+    collection: '97.1%',
+    defaultRate: '1.2%',
+    writeOffLoans: 18,
+    closedLoans: 756,
+    openLoans: 412,
+    amountToBeCollected: '₹5.85 Cr',
+  },
+  {
+    variant: '9 Month',
+    collection: '97.5%',
+    defaultRate: '1.5%',
+    writeOffLoans: 24,
+    closedLoans: 612,
+    openLoans: 498,
+    amountToBeCollected: '₹7.12 Cr',
+  },
+]
+
+export interface RepaymentOverviewDueStatusRow {
+  variant: string
+  openLoans: number
+  closedLoans: number
+  noDues: number
+  oneDue: number
+  twoToFourDues: number
+  moreThanFourDues: number
+}
+
+export const REPAYMENT_OVERVIEW_DUE_STATUS_ROWS: RepaymentOverviewDueStatusRow[] = [
+  {
+    variant: '3 Month',
+    openLoans: 328,
+    closedLoans: 892,
+    noDues: 412,
+    oneDue: 156,
+    twoToFourDues: 98,
+    moreThanFourDues: 44,
+  },
+  {
+    variant: '6 Month',
+    openLoans: 412,
+    closedLoans: 756,
+    noDues: 318,
+    oneDue: 142,
+    twoToFourDues: 124,
+    moreThanFourDues: 72,
+  },
+  {
+    variant: '9 Month',
+    openLoans: 498,
+    closedLoans: 612,
+    noDues: 246,
+    oneDue: 168,
+    twoToFourDues: 156,
+    moreThanFourDues: 104,
+  },
+]

@@ -28,9 +28,12 @@ function formatAmountRisk(n: number): string {
 export function ProductWiseSection({
   data,
   variant,
+  showProductHeading = true,
 }: {
   data: ProductWiseSectionData
   variant: SectionVariant
+  /** When false, omit the H2 (e.g. side panel already shows the variant title) */
+  showProductHeading?: boolean
 }) {
   const formatAmount = variant === 'risk' ? formatAmountRisk : formatAmountDisbursement
   const { dimensionHeaders, metricHeaders, rows } = data.dimensionMetrics
@@ -73,7 +76,7 @@ export function ProductWiseSection({
 
   return (
     <section className={styles.section}>
-      <h2 className={styles.productTitle}>{data.productType}</h2>
+      {showProductHeading ? <h2 className={styles.productTitle}>{data.productType}</h2> : null}
 
       {/* 1. Bar + Line chart: month-year vs count (bar) and amount (line) */}
       <div className={styles.block}>

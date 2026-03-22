@@ -1,4 +1,4 @@
-import { useState, useContext } from 'react'
+import { useState, useContext, useMemo, useRef, useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { PortalOptionContext } from '../App'
 import { getReportsBySubSegment } from '../data/reports-new'
@@ -10,6 +10,14 @@ import {
   ProductWiseCollectionView,
   ProductWiseRiskView,
 } from './ProductWiseViews'
+import { DisbursementProductVariantPanel } from './DisbursementProductVariantPanel'
+import { RepaymentProductVariantPanel } from './RepaymentProductVariantPanel'
+import {
+  isDisbursementVariantProductLabel,
+  isRepaymentVariantProductLabel,
+  REPAYMENT_OVERVIEW_PRODUCT_KPI_ROWS,
+  REPAYMENT_OVERVIEW_DUE_STATUS_ROWS,
+} from '../data/productWiseReportData'
 import styles from './BusinessDashboard.module.css'
 
 function formatCell(cell: string | number): string {
@@ -45,8 +53,9 @@ export function BusinessDashboard() {
 
   if (segmentId === 'business-dashboard') {
     if (subSegmentId === 'business-health') {
+      // Option 2 & 3: layered Key KPI, Disbursement target, Amount to be collected (never NPA %), funnel + dimension dropdown
       if (portalOption === 2 || portalOption === 3) {
-        return <BusinessHealthOption3View />
+        return <BusinessHealthOption23BusinessHealthView />
       }
       return <BusinessHealthView reports={reports} />
     }
@@ -271,8 +280,271 @@ function BusinessHealthView({ reports }: { reports: AnyReport[] }) {
   )
 }
 
-/** Option 3 only: Business Health with Key KPI & Performance distribution as two tabs (same as Option 1), then Audience / Disbursement / Repayment Overview as sections below */
-function BusinessHealthOption3View() {
+/** First-layer KPI cards for Option 2 & 3 Business Health (explicit order; no NPA / NPA % label). */
+function buildOption23BusinessHealthFirstLayer(
+  businessHealthReport: AnyReport | undefined,
+  lendingRatiosReport: AnyReport | undefined
+): { metric: any; target?: string; report: AnyReport }[] {
+  const metrics = businessHealthReport?.metrics ?? []
+  const pick = (label: string) => metrics.find((x: any) => x.label === label)
+  const ce = lendingRatiosReport?.metrics.find((x: any) => x.label === 'Collection efficiency')
+
+  const yieldM = pick('Yield')
+  const disbM = pick('Disbursement')
+  const collM = pick('Collection')
+  const defM = pick('Default rate')
+
+  const amountToCollect: any = {
+    label: 'Amount to be collected',
+    value: '$28.5M',
+    change: '+2.1%',
+    trend: 'up' as const,
+  }
+  const fromData = pick('Amount to be collected') || pick('NPA') || pick('NPA %')
+  if (fromData?.label === 'Amount to be collected' && fromData.value) {
+    amountToCollect.value = fromData.value
+    if (fromData.change != null) amountToCollect.change = fromData.change
+    if (fromData.trend != null) amountToCollect.trend = fromData.trend
+  }
+
+  const out: { metric: any; target?: string; report: AnyReport }[] = []
+  if (yieldM && businessHealthReport) out.push({ metric: yieldM, report: businessHealthReport })
+  if (disbM && businessHealthReport)
+    out.push({ metric: disbM, target: '$26.0M', report: businessHealthReport })
+  if (collM && businessHealthReport) out.push({ metric: collM, report: businessHealthReport })
+  if (businessHealthReport) out.push({ metric: amountToCollect, report: businessHealthReport })
+  if (defM && businessHealthReport) out.push({ metric: defM, report: businessHealthReport })
+  if (ce && lendingRatiosReport) out.push({ metric: ce, report: lendingRatiosReport })
+  return out
+}
+
+/**
+ * Option 2 & 3 — single multi-select (dimensions + KPIs). Ids for KPIs match FUNNEL_TABLE_COLUMN_DEFS (except month, always shown).
+ */
+const FUNNEL_MULTI_DIMENSION_CHOICES: { id: string; label: string }[] = [
+  { id: 'dim-age', label: 'Age' },
+  { id: 'dim-user-type', label: 'User type' },
+  { id: 'dim-region', label: 'Region' },
+  { id: 'dim-occupation', label: 'Occupation' },
+]
+
+const FUNNEL_MULTI_KPI_CHOICES: { id: string; label: string }[] = [
+  { id: 'eligible', label: 'Eligible base' },
+  { id: 'uptake', label: 'Cx Uptake %' },
+  { id: 'borrowers', label: '# of borrowers' },
+  { id: 'ats', label: 'Average ticket size (TSH)' },
+  { id: 'disbursals', label: 'Disbursals' },
+  { id: 'principal-overall', label: 'Principal repayment — overall' },
+  { id: 'principal-7', label: 'Principal repayment — 7-day' },
+  { id: 'principal-14', label: 'Principal repayment — 14-day' },
+  { id: 'gross-yield', label: 'Gross yield %' },
+  { id: 'interest-accrued', label: 'Interest accrued' },
+]
+
+const FUNNEL_MULTI_DEFAULT_SELECTION: string[] = FUNNEL_MULTI_KPI_CHOICES.map((o) => o.id)
+
+/** Title uses dimensions only; KPI/metric picks are not listed in the heading. */
+function buildFunnelProjectionHeaderFromMultiSelect(selectedIds: string[]): string {
+  const base = 'Disbursal funnel projection'
+  const fy = 'FY 2025–26'
+  const dimLabels = FUNNEL_MULTI_DIMENSION_CHOICES.filter((o) => selectedIds.includes(o.id)).map((o) => o.label)
+  if (dimLabels.length === 0) return `${base} – ${fy}`
+  return `${base} – ${dimLabels.join(', ')} – ${fy}`
+}
+
+/** Row-major data for disbursal funnel projection (13 rows); columns built in FUNNEL_TABLE_COLUMN_DEFS */
+const FUNNEL_TABLE_ROW_DATA: string[][] = [
+  ['M1 (Aug-25)', '500 K', '10.00%', '50 K', '11,500', '0.6 Bn', '90.50%', '91.50%', '90.00%'],
+  ['M2 (Sep-25)', '500 K', '15.00%', '75 K', '11,500', '0.9 Bn', '90.50%', '91.50%', '90.00%'],
+  ['M3 (Oct-25)', '1.0 Mn', '20.00%', '201 K', '11,500', '2.3 Bn', '90.50%', '91.50%', '90.00%'],
+  ['M4 (Nov-25)', '1.0 Mn', '20.20%', '204 K', '11,750', '2.4 Bn', '90.50%', '91.50%', '90.00%'],
+  ['M5 (Dec-25)', '2.0 Mn', '20.40%', '418 K', '12,750', '5.3 Bn', '90.50%', '91.50%', '90.00%'],
+  ['M6 (Jan-25)', '2.1 Mn', '20.60%', '426 K', '12,679', '5.4 Bn', '90.50%', '91.50%', '90.00%'],
+  ['M7 (Feb-25)', '2.1 Mn', '20.80%', '439 K', '13,178', '5.8 Bn', '90.50%', '91.50%', '90.00%'],
+  ['M8 (Mar-25)', '2.2 Mn', '21.00%', '452 K', '13,978', '6.3 Bn', '90.50%', '91.50%', '90.00%'],
+  ['M9 (Apr-25)', '2.2 Mn', '21.20%', '466 K', '15,417', '7.1 Bn', '90.50%', '91.50%', '90.00%'],
+  ['M10 (May-25)', '2.2 Mn', '21.40%', '480 K', '16,091', '7.7 Bn', '90.50%', '91.50%', '90.00%'],
+  ['M11 (Jun-25)', '2.3 Mn', '21.70%', '495 K', '16,481', '8.0 Bn', '90.50%', '91.50%', '90.00%'],
+  ['M12 (Jul-25)', '2.3 Mn', '21.90%', '510 K', '16,991', '8.4 Bn', '90.50%', '91.50%', '90.00%'],
+  ['FY 2025–26', '-', '-', '-', '-', '59.6 Bn', '90.50%', '91.50%', '90.00%'],
+]
+
+const FUNNEL_BASE_COLUMN_META: { id: string; label: string }[] = [
+  { id: 'month', label: 'Disbursal Month' },
+  { id: 'eligible', label: 'Eligible Base (split 50% across 7-day & 14-day)' },
+  { id: 'uptake', label: 'Cx Uptake' },
+  { id: 'borrowers', label: '# of borrowers (7-day & 14-day combined)' },
+  { id: 'ats', label: 'Average Ticket Size (TSH)' },
+  { id: 'disbursals', label: 'Disbursals (TSH) – combined' },
+  { id: 'principal-overall', label: 'Principal Repayment (Maturity) – Overall' },
+  { id: 'principal-7', label: 'Principal Repayment (Maturity) – 7-day' },
+  { id: 'principal-14', label: 'Principal Repayment (Maturity) – 14-day' },
+]
+
+const FUNNEL_TABLE_COLUMN_DEFS: { id: string; label: string; optional?: boolean; cells: string[] }[] = [
+  ...FUNNEL_BASE_COLUMN_META.map((meta, colIdx) => ({
+    ...meta,
+    cells: FUNNEL_TABLE_ROW_DATA.map((row) => row[colIdx]),
+  })),
+  {
+    id: 'gross-yield',
+    label: 'Gross yield %',
+    optional: true,
+    cells: [
+      '12.40%',
+      '12.45%',
+      '12.52%',
+      '12.55%',
+      '12.60%',
+      '12.62%',
+      '12.65%',
+      '12.70%',
+      '12.75%',
+      '12.78%',
+      '12.82%',
+      '12.85%',
+      '12.80%',
+    ],
+  },
+  {
+    id: 'interest-accrued',
+    label: 'Interest accrued (TSH)',
+    optional: true,
+    cells: [
+      '4.2 Mn',
+      '6.4 Mn',
+      '15.8 Mn',
+      '16.5 Mn',
+      '36.2 Mn',
+      '37.1 Mn',
+      '39.8 Mn',
+      '43.2 Mn',
+      '48.6 Mn',
+      '52.4 Mn',
+      '54.8 Mn',
+      '57.2 Mn',
+      '214.0 Mn',
+    ],
+  },
+]
+
+const FUNNEL_DEFAULT_VISIBLE_COLUMN_IDS = FUNNEL_TABLE_COLUMN_DEFS.filter((c) => !c.optional).map((c) => c.id)
+
+const FUNNEL_FY_ROW_BOLD_COLS = new Set([
+  'month',
+  'disbursals',
+  'principal-overall',
+  'principal-7',
+  'principal-14',
+  'gross-yield',
+  'interest-accrued',
+])
+
+/** Shared: Option 2 & 3 repayment product-variant tables + click to open side panel */
+function RepaymentProductWiseVariantTables({ onOpenVariant }: { onOpenVariant: (variant: string) => void }) {
+  return (
+    <>
+      <h3 className={styles.sectionTitle} style={{ marginTop: '1.25rem', fontSize: '1rem' }}>
+        Product-wise metrics
+      </h3>
+      <p className={styles.productVariantHint}>
+        Click a <strong>product variant</strong> in the first column to open collection + risk variant-wise reports in a
+        side panel.
+      </p>
+      <div className={styles.tableSection}>
+        <table className={styles.table} aria-label="Repayment product-wise KPIs by variant">
+          <thead>
+            <tr>
+              <th scope="col">Product variant</th>
+              <th scope="col">Collection</th>
+              <th scope="col">Default rate</th>
+              <th scope="col">Write-off loans</th>
+              <th scope="col">Closed loans</th>
+              <th scope="col">Open loans</th>
+              <th scope="col">Amount to be collected</th>
+            </tr>
+          </thead>
+          <tbody>
+            {REPAYMENT_OVERVIEW_PRODUCT_KPI_ROWS.map((row) => (
+              <tr key={row.variant}>
+                <td>
+                  {isRepaymentVariantProductLabel(row.variant) ? (
+                    <button
+                      type="button"
+                      className={styles.productVariantCellBtn}
+                      onClick={() => onOpenVariant(row.variant)}
+                    >
+                      {row.variant}
+                    </button>
+                  ) : (
+                    row.variant
+                  )}
+                </td>
+                <td>{row.collection}</td>
+                <td>{row.defaultRate}</td>
+                <td>{row.writeOffLoans.toLocaleString()}</td>
+                <td>{row.closedLoans.toLocaleString()}</td>
+                <td>{row.openLoans.toLocaleString()}</td>
+                <td>{row.amountToBeCollected}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <h3 className={styles.sectionTitle} style={{ marginTop: '1.5rem', fontSize: '1rem' }}>
+        Loan status &amp; due buckets by product
+      </h3>
+      <p className={styles.productVariantHint}>
+        Open / closed loan counts and overdue buckets (no dues through &gt;4 dues). Click variant to open the same side
+        panel with full collection and risk reports.
+      </p>
+      <div className={styles.tableSection}>
+        <table className={styles.table} aria-label="Loan status and due bands by product variant">
+          <thead>
+            <tr>
+              <th scope="col">Product variant</th>
+              <th scope="col">Open loans</th>
+              <th scope="col">Closed loans</th>
+              <th scope="col">No dues</th>
+              <th scope="col">1 due</th>
+              <th scope="col">2–4 dues</th>
+              <th scope="col">More than 4 dues</th>
+            </tr>
+          </thead>
+          <tbody>
+            {REPAYMENT_OVERVIEW_DUE_STATUS_ROWS.map((row) => (
+              <tr key={row.variant}>
+                <td>
+                  {isRepaymentVariantProductLabel(row.variant) ? (
+                    <button
+                      type="button"
+                      className={styles.productVariantCellBtn}
+                      onClick={() => onOpenVariant(row.variant)}
+                    >
+                      {row.variant}
+                    </button>
+                  ) : (
+                    row.variant
+                  )}
+                </td>
+                <td>{row.openLoans.toLocaleString()}</td>
+                <td>{row.closedLoans.toLocaleString()}</td>
+                <td>{row.noDues.toLocaleString()}</td>
+                <td>{row.oneDue.toLocaleString()}</td>
+                <td>{row.twoToFourDues.toLocaleString()}</td>
+                <td>{row.moreThanFourDues.toLocaleString()}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </>
+  )
+}
+
+/** Option 2 & 3: Business Health — layered KPIs, funnel projection + dimensions & metrics multi-select (between title and table); never shows “NPA %” in the initial layer. */
+function BusinessHealthOption23BusinessHealthView() {
   const healthReports = getReportsBySubSegment('business-dashboard', 'business-health')
   const audienceReports = getReportsBySubSegment('business-dashboard', 'audience-overview')
   const disbursementReports = getReportsBySubSegment('business-dashboard', 'disbursement-overview')
@@ -284,6 +556,51 @@ function BusinessHealthOption3View() {
   const [activeTab, setActiveTab] = useState<'kpi' | 'performance'>('kpi')
   const [performancePopup, setPerformancePopup] = useState<{ widgetIndex: number; row: 'highest' | 'lowest' } | null>(null)
   const [expandedOverviews, setExpandedOverviews] = useState<Set<string>>(new Set(['audience', 'disbursement', 'repayment']))
+  /** Dimensions + KPI/metrics; drives table columns (KPI ids) and title (dims + KPIs). Option 2 & 3 only. */
+  const [funnelMultiSelection, setFunnelMultiSelection] = useState<string[]>(() => [...FUNNEL_MULTI_DEFAULT_SELECTION])
+  const [funnelMultiDropdownOpen, setFunnelMultiDropdownOpen] = useState(false)
+  const funnelMultiDropdownRef = useRef<HTMLDivElement>(null)
+  const [disbursementVariantPanelProduct, setDisbursementVariantPanelProduct] = useState<string | null>(null)
+  const [repaymentVariantPanelProduct, setRepaymentVariantPanelProduct] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (!funnelMultiDropdownOpen) return
+    const onDoc = (e: MouseEvent) => {
+      if (funnelMultiDropdownRef.current?.contains(e.target as Node)) return
+      setFunnelMultiDropdownOpen(false)
+    }
+    document.addEventListener('mousedown', onDoc)
+    return () => document.removeEventListener('mousedown', onDoc)
+  }, [funnelMultiDropdownOpen])
+
+  const funnelMultiSummary = useMemo(() => {
+    const labels = [
+      ...FUNNEL_MULTI_DIMENSION_CHOICES.filter((o) => funnelMultiSelection.includes(o.id)).map((o) => o.label),
+      ...FUNNEL_MULTI_KPI_CHOICES.filter((o) => funnelMultiSelection.includes(o.id)).map((o) => o.label),
+    ]
+    if (labels.length === 0) return 'Choose dimensions & metrics…'
+    if (labels.length <= 2) return labels.join(', ')
+    return `${labels.slice(0, 2).join(', ')} +${labels.length - 2} more`
+  }, [funnelMultiSelection])
+
+  const toggleFunnelMultiId = (id: string) => {
+    setFunnelMultiSelection((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]))
+  }
+
+  const funnelColById = useMemo(() => {
+    return Object.fromEntries(FUNNEL_TABLE_COLUMN_DEFS.map((c) => [c.id, c])) as Record<
+      string,
+      (typeof FUNNEL_TABLE_COLUMN_DEFS)[number]
+    >
+  }, [])
+
+  const funnelVisibleColumnOrder = useMemo(() => {
+    const kpiIds = FUNNEL_TABLE_COLUMN_DEFS.map((c) => c.id).filter((id) => id !== 'month')
+    const picked = kpiIds.filter((id) => funnelMultiSelection.includes(id))
+    if (picked.length === 0) return [...FUNNEL_DEFAULT_VISIBLE_COLUMN_IDS]
+    return ['month', ...picked]
+  }, [funnelMultiSelection])
+
   const toggleOverview = (id: string) => {
     setExpandedOverviews((prev) => {
       const next = new Set(prev)
@@ -303,11 +620,13 @@ function BusinessHealthOption3View() {
   const npaOverview = repaymentReports.find((r: AnyReport) => r.id === 'npa-overview')
   const byStatus = repaymentReports.find((r: AnyReport) => r.id === 'repayment-by-status')
   const byDueBands = repaymentReports.find((r: AnyReport) => r.id === 'repayment-by-due-bands')
-  const collectionByProduct = getReportsBySubSegment('repayment', 'collection-analysis').find((r: AnyReport) => r.id === 'collection-by-product')
-  const riskByProduct = getReportsBySubSegment('repayment', 'risk-analysis').find((r: AnyReport) => r.id === 'risk-by-product')
   const writeOffReport = getReportsBySubSegment('repayment', 'risk-analysis').find((r: AnyReport) => r.id === 'write-off-analysis')
 
   const widgets = performersReport?.performanceWidgets ?? []
+
+  const funnelProjectionHeader = buildFunnelProjectionHeaderFromMultiSelect(funnelMultiSelection)
+
+  const firstLayerCards = buildOption23BusinessHealthFirstLayer(businessHealthReport, lendingRatiosReport)
 
   return (
     <div className={styles.wrapper}>
@@ -344,16 +663,16 @@ function BusinessHealthOption3View() {
             {/* First layer: initial KPIs only, in their own box */}
             <div className={styles.kpiOption3Layer1Box}>
               <div className={styles.kpiOption3Layer1}>
-                {businessHealthReport?.metrics
-                  .filter((m: any) => ['Yield', 'Disbursement', 'Collection', 'NPA', 'Default rate'].includes(m.label))
-                  .map((metric: any, i: number) => (
-                    <MetricCard key={`kpi1-${i}`} metric={{ ...metric, label: metric.label === 'NPA' ? 'NPA %' : metric.label }} report={businessHealthReport} />
-                  ))}
-                {lendingRatiosReport?.metrics
-                  .filter((m: any) => m.label === 'Collection efficiency')
-                  .map((metric: any, i: number) => (
-                    <MetricCard key={`kpi1-ce-${i}`} metric={metric} report={lendingRatiosReport} />
-                  ))}
+                {firstLayerCards.map((item, i) => (
+                  <MetricCard
+                    key={`kpi23-${i}-${item.metric.label}`}
+                    metric={{
+                      ...item.metric,
+                      target: item.target,
+                    }}
+                    report={item.report}
+                  />
+                ))}
               </div>
             </div>
             {/* Second layer: separate box below first layer; left/right KPI structure preserved */}
@@ -398,167 +717,92 @@ function BusinessHealthOption3View() {
             {/* Disbursal funnel projection table (static example, following the provided sheet) */}
             <div className={styles.funnelProjectionBox}>
               <h3 className={styles.sectionTitle} style={{ fontSize: '1rem', marginBottom: '0.75rem' }}>
-                Disbursal funnel projection – FY 2025–26
+                {funnelProjectionHeader}
               </h3>
+
+              {/* Compact dropdown row (like original single-select); panel uses checkboxes for multi-select */}
+              <div
+                ref={funnelMultiDropdownRef}
+                className={`${styles.funnelDimensionRow} ${styles.funnelDimensionRowBeforeTable}`}
+              >
+                <span className={styles.funnelDimensionLabel} id="funnel-multi-label">
+                  Dimensions &amp; metrics
+                </span>
+                <div className={styles.funnelMultiDropdown}>
+                  <button
+                    type="button"
+                    className={styles.funnelMultiDropdownTrigger}
+                    aria-expanded={funnelMultiDropdownOpen}
+                    aria-haspopup="listbox"
+                    aria-labelledby="funnel-multi-label"
+                    onClick={() => setFunnelMultiDropdownOpen((o) => !o)}
+                  >
+                    <span className={styles.funnelMultiDropdownTriggerText}>{funnelMultiSummary}</span>
+                    <span className={styles.funnelMultiDropdownChevron} aria-hidden>
+                      ▾
+                    </span>
+                  </button>
+                  {funnelMultiDropdownOpen ? (
+                    <div className={styles.funnelMultiDropdownPanel} role="listbox" aria-multiselectable>
+                      <div className={styles.funnelMultiDropdownGroupLabel}>Dimensions</div>
+                      {FUNNEL_MULTI_DIMENSION_CHOICES.map((opt) => {
+                        const on = funnelMultiSelection.includes(opt.id)
+                        return (
+                          <label
+                            key={opt.id}
+                            className={`${styles.funnelMultiDropdownItem} ${on ? styles.funnelMultiDropdownItemSelected : ''}`}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={on}
+                              onChange={() => toggleFunnelMultiId(opt.id)}
+                            />
+                            <span>{opt.label}</span>
+                          </label>
+                        )
+                      })}
+                      <div className={styles.funnelMultiDropdownGroupLabel}>Metrics (table columns)</div>
+                      {FUNNEL_MULTI_KPI_CHOICES.map((opt) => {
+                        const on = funnelMultiSelection.includes(opt.id)
+                        return (
+                          <label
+                            key={opt.id}
+                            className={`${styles.funnelMultiDropdownItem} ${on ? styles.funnelMultiDropdownItemSelected : ''}`}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={on}
+                              onChange={() => toggleFunnelMultiId(opt.id)}
+                            />
+                            <span>{opt.label}</span>
+                          </label>
+                        )
+                      })}
+                    </div>
+                  ) : null}
+                </div>
+              </div>
+
               <div className={styles.tableSection}>
-                <table className={styles.table}>
+                <table className={styles.table} aria-label="Disbursal funnel projection">
                   <thead>
                     <tr>
-                      <th>Disbursal Month</th>
-                      <th>Eligible Base (split 50% across 7-day &amp; 14-day)</th>
-                      <th>Cx Uptake</th>
-                      <th># of borrowers (7-day &amp; 14-day combined)</th>
-                      <th>Average Ticket Size (TSH)</th>
-                      <th>Disbursals (TSH) – combined</th>
-                      <th>Principal Repayment (Maturity) – Overall</th>
-                      <th>Principal Repayment (Maturity) – 7-day</th>
-                      <th>Principal Repayment (Maturity) – 14-day</th>
+                      {funnelVisibleColumnOrder.map((colId) => (
+                        <th key={colId}>{funnelColById[colId]?.label}</th>
+                      ))}
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td>M1 (Aug-25)</td>
-                      <td>500 K</td>
-                      <td>10.00%</td>
-                      <td>50 K</td>
-                      <td>11,500</td>
-                      <td>0.6 Bn</td>
-                      <td>90.50%</td>
-                      <td>91.50%</td>
-                      <td>90.00%</td>
-                    </tr>
-                    <tr>
-                      <td>M2 (Sep-25)</td>
-                      <td>500 K</td>
-                      <td>15.00%</td>
-                      <td>75 K</td>
-                      <td>11,500</td>
-                      <td>0.9 Bn</td>
-                      <td>90.50%</td>
-                      <td>91.50%</td>
-                      <td>90.00%</td>
-                    </tr>
-                    <tr>
-                      <td>M3 (Oct-25)</td>
-                      <td>1.0 Mn</td>
-                      <td>20.00%</td>
-                      <td>201 K</td>
-                      <td>11,500</td>
-                      <td>2.3 Bn</td>
-                      <td>90.50%</td>
-                      <td>91.50%</td>
-                      <td>90.00%</td>
-                    </tr>
-                    <tr>
-                      <td>M4 (Nov-25)</td>
-                      <td>1.0 Mn</td>
-                      <td>20.20%</td>
-                      <td>204 K</td>
-                      <td>11,750</td>
-                      <td>2.4 Bn</td>
-                      <td>90.50%</td>
-                      <td>91.50%</td>
-                      <td>90.00%</td>
-                    </tr>
-                    <tr>
-                      <td>M5 (Dec-25)</td>
-                      <td>2.0 Mn</td>
-                      <td>20.40%</td>
-                      <td>418 K</td>
-                      <td>12,750</td>
-                      <td>5.3 Bn</td>
-                      <td>90.50%</td>
-                      <td>91.50%</td>
-                      <td>90.00%</td>
-                    </tr>
-                    <tr>
-                      <td>M6 (Jan-25)</td>
-                      <td>2.1 Mn</td>
-                      <td>20.60%</td>
-                      <td>426 K</td>
-                      <td>12,679</td>
-                      <td>5.4 Bn</td>
-                      <td>90.50%</td>
-                      <td>91.50%</td>
-                      <td>90.00%</td>
-                    </tr>
-                    <tr>
-                      <td>M7 (Feb-25)</td>
-                      <td>2.1 Mn</td>
-                      <td>20.80%</td>
-                      <td>439 K</td>
-                      <td>13,178</td>
-                      <td>5.8 Bn</td>
-                      <td>90.50%</td>
-                      <td>91.50%</td>
-                      <td>90.00%</td>
-                    </tr>
-                    <tr>
-                      <td>M8 (Mar-25)</td>
-                      <td>2.2 Mn</td>
-                      <td>21.00%</td>
-                      <td>452 K</td>
-                      <td>13,978</td>
-                      <td>6.3 Bn</td>
-                      <td>90.50%</td>
-                      <td>91.50%</td>
-                      <td>90.00%</td>
-                    </tr>
-                    <tr>
-                      <td>M9 (Apr-25)</td>
-                      <td>2.2 Mn</td>
-                      <td>21.20%</td>
-                      <td>466 K</td>
-                      <td>15,417</td>
-                      <td>7.1 Bn</td>
-                      <td>90.50%</td>
-                      <td>91.50%</td>
-                      <td>90.00%</td>
-                    </tr>
-                    <tr>
-                      <td>M10 (May-25)</td>
-                      <td>2.2 Mn</td>
-                      <td>21.40%</td>
-                      <td>480 K</td>
-                      <td>16,091</td>
-                      <td>7.7 Bn</td>
-                      <td>90.50%</td>
-                      <td>91.50%</td>
-                      <td>90.00%</td>
-                    </tr>
-                    <tr>
-                      <td>M11 (Jun-25)</td>
-                      <td>2.3 Mn</td>
-                      <td>21.70%</td>
-                      <td>495 K</td>
-                      <td>16,481</td>
-                      <td>8.0 Bn</td>
-                      <td>90.50%</td>
-                      <td>91.50%</td>
-                      <td>90.00%</td>
-                    </tr>
-                    <tr>
-                      <td>M12 (Jul-25)</td>
-                      <td>2.3 Mn</td>
-                      <td>21.90%</td>
-                      <td>510 K</td>
-                      <td>16,991</td>
-                      <td>8.4 Bn</td>
-                      <td>90.50%</td>
-                      <td>91.50%</td>
-                      <td>90.00%</td>
-                    </tr>
-                    <tr>
-                      <td><strong>FY 2025–26</strong></td>
-                      <td>-</td>
-                      <td>-</td>
-                      <td>-</td>
-                      <td>-</td>
-                      <td><strong>59.6 Bn</strong></td>
-                      <td><strong>90.50%</strong></td>
-                      <td><strong>91.50%</strong></td>
-                      <td><strong>90.00%</strong></td>
-                    </tr>
+                    {FUNNEL_TABLE_ROW_DATA.map((_, rowIdx) => (
+                      <tr key={rowIdx}>
+                        {funnelVisibleColumnOrder.map((colId) => {
+                          const def = funnelColById[colId]
+                          const cell = def?.cells[rowIdx] ?? '–'
+                          const bold = rowIdx === 12 && FUNNEL_FY_ROW_BOLD_COLS.has(colId)
+                          return <td key={colId}>{bold ? <strong>{cell}</strong> : cell}</td>
+                        })}
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>
@@ -692,12 +936,36 @@ function BusinessHealthOption3View() {
           {disbursementMetrics?.table && (
             <>
               <h3 className={styles.sectionTitle} style={{ marginTop: '1rem', fontSize: '1rem' }}>Product-wise split</h3>
+              <p className={styles.productVariantHint}>
+                Click <strong>3 Month</strong>, <strong>6 Month</strong>, or <strong>9 Month</strong> to open variant-wise
+                reports (trend, month-year, store, dimensions) in a side panel.
+              </p>
               <div className={styles.tableSection}>
                 <table className={styles.table}>
-                  <thead><tr>{disbursementMetrics.table.headers.map((h, i) => <th key={i}>{h}</th>)}</tr></thead>
+                  <thead>
+                    <tr>{disbursementMetrics.table.headers.map((h, i) => <th key={i}>{h}</th>)}</tr>
+                  </thead>
                   <tbody>
                     {disbursementMetrics.table.rows.map((row, i) => (
-                      <tr key={i}>{row.map((cell, j) => <td key={j}>{formatCell(cell)}</td>)}</tr>
+                      <tr key={i}>
+                        {row.map((cell, j) => (
+                          <td key={j}>
+                            {j === 0 && isDisbursementVariantProductLabel(cell) ? (
+                              <button
+                                type="button"
+                                className={styles.productVariantCellBtn}
+                                onClick={() => setDisbursementVariantPanelProduct(cell)}
+                              >
+                                {String(cell)}
+                              </button>
+                            ) : typeof cell === 'number' ? (
+                              formatCell(cell)
+                            ) : (
+                              String(cell)
+                            )}
+                          </td>
+                        ))}
+                      </tr>
                     ))}
                   </tbody>
                 </table>
@@ -769,26 +1037,9 @@ function BusinessHealthOption3View() {
               <MetricCard key={`wo-${i}`} metric={metric} report={writeOffReport} />
             ))}
           </div>
-          {collectionByProduct && (
-            <div style={{ marginBottom: '1.5rem' }}>
-              <h3 style={{ fontSize: '0.95rem', fontWeight: 600, marginBottom: '0.75rem', color: 'var(--text-secondary)' }}>Collection by Product</h3>
-              <div className={styles.metricsGrid}>
-                {collectionByProduct.metrics.map((metric: any, i: number) => (
-                  <MetricCard key={i} metric={metric} report={collectionByProduct} />
-                ))}
-              </div>
-            </div>
-          )}
-          {riskByProduct && (
-            <div style={{ marginBottom: '1.5rem' }}>
-              <h3 style={{ fontSize: '0.95rem', fontWeight: 600, marginBottom: '0.75rem', color: 'var(--text-secondary)' }}>NPA by Product</h3>
-              <div className={styles.metricsGrid}>
-                {riskByProduct.metrics.map((metric: any, i: number) => (
-                  <MetricCard key={i} metric={metric} report={riskByProduct} />
-                ))}
-              </div>
-            </div>
-          )}
+
+          <RepaymentProductWiseVariantTables onOpenVariant={setRepaymentVariantPanelProduct} />
+
           <div className={styles.sectionActions}>
             <Link to="/segment/repayment/collection-analysis" className={styles.navLink}>
               <span>View detailed product-wise analysis</span><span>→</span>
@@ -828,6 +1079,14 @@ function BusinessHealthOption3View() {
           )}
         </section>
       </div>
+      <DisbursementProductVariantPanel
+        productType={disbursementVariantPanelProduct}
+        onClose={() => setDisbursementVariantPanelProduct(null)}
+      />
+      <RepaymentProductVariantPanel
+        productType={repaymentVariantPanelProduct}
+        onClose={() => setRepaymentVariantPanelProduct(null)}
+      />
     </div>
   )
 }
@@ -1091,6 +1350,10 @@ function ImpactAnalysisView() {
 }
 
 function DisbursementOverviewView({ reports }: { reports: AnyReport[] }) {
+  const portalOption = useContext(PortalOptionContext)
+  const showDisbursementVariantPanel = portalOption === 2 || portalOption === 3
+  const [disbursementVariantPanelProduct, setDisbursementVariantPanelProduct] = useState<string | null>(null)
+
   const disbursementMetrics = reports.find((r) => r.id === 'disbursement-metrics')
   const eligibilityBands = reports.find((r) => r.id === 'eligibility-band-distribution')
   const loanLimitBands = reports.find((r) => r.id === 'loan-limit-distribution')
@@ -1113,6 +1376,12 @@ function DisbursementOverviewView({ reports }: { reports: AnyReport[] }) {
           <div className={styles.sectionHeader}>
             <h2 className={styles.sectionTitle}>Product-wise split</h2>
           </div>
+          {showDisbursementVariantPanel ? (
+            <p className={styles.productVariantHint}>
+              Click <strong>3 Month</strong>, <strong>6 Month</strong>, or <strong>9 Month</strong> in the first column to
+              open variant-wise reports in a side panel.
+            </p>
+          ) : null}
           {disbursementMetrics?.table && (
             <div className={styles.tableSection}>
               <table className={styles.table}>
@@ -1128,13 +1397,27 @@ function DisbursementOverviewView({ reports }: { reports: AnyReport[] }) {
                     <tr key={i}>
                       {row.map((cell, j) => (
                         <td key={j}>
-                          {typeof cell === 'number'
-                            ? cell >= 1000000
-                              ? `$${(cell / 1000000).toFixed(1)}M`
-                              : cell >= 1000
-                                ? cell.toLocaleString()
-                                : cell
-                            : String(cell)}
+                          {showDisbursementVariantPanel &&
+                          j === 0 &&
+                          isDisbursementVariantProductLabel(cell) ? (
+                            <button
+                              type="button"
+                              className={styles.productVariantCellBtn}
+                              onClick={() => setDisbursementVariantPanelProduct(cell)}
+                            >
+                              {String(cell)}
+                            </button>
+                          ) : typeof cell === 'number' ? (
+                            cell >= 1000000 ? (
+                              `$${(cell / 1000000).toFixed(1)}M`
+                            ) : cell >= 1000 ? (
+                              cell.toLocaleString()
+                            ) : (
+                              cell
+                            )
+                          ) : (
+                            String(cell)
+                          )}
                         </td>
                       ))}
                     </tr>
@@ -1221,18 +1504,28 @@ function DisbursementOverviewView({ reports }: { reports: AnyReport[] }) {
           )}
         </section>
       </div>
+      {showDisbursementVariantPanel ? (
+        <DisbursementProductVariantPanel
+          productType={disbursementVariantPanelProduct}
+          onClose={() => setDisbursementVariantPanelProduct(null)}
+        />
+      ) : null}
     </div>
   )
 }
 
 function RepaymentOverviewView({ reports }: { reports: AnyReport[] }) {
+  const portalOption = useContext(PortalOptionContext)
+  const option23RepaymentTables = portalOption === 2 || portalOption === 3
+  const [repaymentVariantPanelProduct, setRepaymentVariantPanelProduct] = useState<string | null>(null)
+
   const repaymentMetrics = reports.find((r) => r.id === 'repayment-metrics')
   const collectionMetrics = reports.find((r) => r.id === 'collection-metrics')
   const npaOverview = reports.find((r) => r.id === 'npa-overview')
   const byStatus = reports.find((r) => r.id === 'repayment-by-status')
   const byDueBands = reports.find((r) => r.id === 'repayment-by-due-bands')
-  
-  // Get product-wise reports from repayment segment
+
+  // Get product-wise reports from repayment segment (Option 1 only — Option 2/3 use tabular variant view)
   const collectionByProduct = getReportsBySubSegment('repayment', 'collection-analysis').find((r) => r.id === 'collection-by-product')
   const riskByProduct = getReportsBySubSegment('repayment', 'risk-analysis').find((r) => r.id === 'risk-by-product')
   const writeOffReport = getReportsBySubSegment('repayment', 'risk-analysis').find((r) => r.id === 'write-off-analysis')
@@ -1264,25 +1557,37 @@ function RepaymentOverviewView({ reports }: { reports: AnyReport[] }) {
           <div className={styles.sectionHeader}>
             <h2 className={styles.sectionTitle}>Product-wise metrics</h2>
           </div>
-          {collectionByProduct && (
-            <div style={{ marginBottom: '1.5rem' }}>
-              <h3 style={{ fontSize: '0.95rem', fontWeight: 600, marginBottom: '0.75rem', color: 'var(--text-secondary)' }}>Collection by Product</h3>
-              <div className={styles.metricsGrid}>
-                {collectionByProduct.metrics.map((metric, i) => (
-                  <MetricCard key={`col-prod-${i}`} metric={metric} report={collectionByProduct} />
-                ))}
-              </div>
-            </div>
-          )}
-          {riskByProduct && (
-            <div style={{ marginBottom: '1.5rem' }}>
-              <h3 style={{ fontSize: '0.95rem', fontWeight: 600, marginBottom: '0.75rem', color: 'var(--text-secondary)' }}>NPA by Product</h3>
-              <div className={styles.metricsGrid}>
-                {riskByProduct.metrics.map((metric, i) => (
-                  <MetricCard key={`risk-prod-${i}`} metric={metric} report={riskByProduct} />
-                ))}
-              </div>
-            </div>
+          {option23RepaymentTables ? (
+            <>
+              <p className={styles.productVariantHint} style={{ marginTop: 0 }}>
+                <strong>Option {portalOption}</strong> — tabular variant view. Click <strong>3 / 6 / 9 Month</strong> to open
+                the collection + risk side panel.
+              </p>
+              <RepaymentProductWiseVariantTables onOpenVariant={setRepaymentVariantPanelProduct} />
+            </>
+          ) : (
+            <>
+              {collectionByProduct && (
+                <div style={{ marginBottom: '1.5rem' }}>
+                  <h3 style={{ fontSize: '0.95rem', fontWeight: 600, marginBottom: '0.75rem', color: 'var(--text-secondary)' }}>Collection by Product</h3>
+                  <div className={styles.metricsGrid}>
+                    {collectionByProduct.metrics.map((metric, i) => (
+                      <MetricCard key={`col-prod-${i}`} metric={metric} report={collectionByProduct} />
+                    ))}
+                  </div>
+                </div>
+              )}
+              {riskByProduct && (
+                <div style={{ marginBottom: '1.5rem' }}>
+                  <h3 style={{ fontSize: '0.95rem', fontWeight: 600, marginBottom: '0.75rem', color: 'var(--text-secondary)' }}>NPA by Product</h3>
+                  <div className={styles.metricsGrid}>
+                    {riskByProduct.metrics.map((metric, i) => (
+                      <MetricCard key={`risk-prod-${i}`} metric={metric} report={riskByProduct} />
+                    ))}
+                  </div>
+                </div>
+              )}
+            </>
           )}
           <div className={styles.sectionActions}>
             <Link
@@ -1377,6 +1682,12 @@ function RepaymentOverviewView({ reports }: { reports: AnyReport[] }) {
           </div>
         </section>
       </div>
+      {option23RepaymentTables ? (
+        <RepaymentProductVariantPanel
+          productType={repaymentVariantPanelProduct}
+          onClose={() => setRepaymentVariantPanelProduct(null)}
+        />
+      ) : null}
     </div>
   )
 }
