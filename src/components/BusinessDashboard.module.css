@@ -467,6 +467,77 @@
   gap: 1rem;
 }
 
+/* Option 2 & 3 — Audience Overview weekly multi-line trend quadrant */
+.audienceTrendGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.audienceTrendCard {
+  background: rgba(15, 22, 32, 0.5);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  padding: 0.75rem 0.75rem 0.65rem;
+}
+
+.audienceTrendCardTitle {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.1rem;
+}
+
+.audienceTrendAxisLabel {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-bottom: 0.25rem;
+}
+
+.audienceTrendSvg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.audienceTrendGridLine {
+  stroke: rgba(148, 163, 184, 0.22);
+  stroke-width: 1;
+}
+
+.audienceTrendAxisLine {
+  stroke: rgba(148, 163, 184, 0.42);
+  stroke-width: 1.2;
+}
+
+.audienceTrendTick {
+  fill: var(--text-muted);
+  font-size: 8px;
+}
+
+.audienceTrendLegend {
+  display: flex;
+  gap: 0.8rem;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 0.15rem;
+}
+
+.audienceTrendLegendItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.audienceTrendLegendSwatch {
+  width: 12px;
+  height: 3px;
+  border-radius: 99px;
+}
+
 /* Performance distribution: one widget per metric–cohort with 2x2 matrix */
 .performanceWidgetsGrid {
   display: grid;

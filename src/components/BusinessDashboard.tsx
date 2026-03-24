@@ -543,6 +543,177 @@ function RepaymentProductWiseVariantTables({ onOpenVariant }: { onOpenVariant: (
   )
 }
 
+const AUDIENCE_FUNNEL_DIMENSION_ROWS: {
+  dimension: 'User type' | 'Age' | 'Region'
+  value: string
+  eligibleCustomers: string
+  optedInPct: string
+  uptakePct: string
+}[] = [
+  { dimension: 'User type', value: 'NTC', eligibleCustomers: '1,420', optedInPct: '61%', uptakePct: '42%' },
+  { dimension: 'User type', value: 'ETB', eligibleCustomers: '2,980', optedInPct: '77%', uptakePct: '64%' },
+  { dimension: 'Age', value: '18–25', eligibleCustomers: '860', optedInPct: '58%', uptakePct: '39%' },
+  { dimension: 'Age', value: '26–35', eligibleCustomers: '1,960', optedInPct: '74%', uptakePct: '61%' },
+  { dimension: 'Age', value: '36–45', eligibleCustomers: '1,150', optedInPct: '71%', uptakePct: '56%' },
+  { dimension: 'Age', value: '46+', eligibleCustomers: '430', optedInPct: '65%', uptakePct: '49%' },
+  { dimension: 'Region', value: 'North', eligibleCustomers: '1,260', optedInPct: '73%', uptakePct: '60%' },
+  { dimension: 'Region', value: 'South', eligibleCustomers: '1,170', optedInPct: '69%', uptakePct: '54%' },
+  { dimension: 'Region', value: 'East', eligibleCustomers: '980', optedInPct: '66%', uptakePct: '52%' },
+  { dimension: 'Region', value: 'West', eligibleCustomers: '990', optedInPct: '72%', uptakePct: '58%' },
+]
+
+const AUDIENCE_TRANSACTION_DIMENSION_ROWS: {
+  dimension: 'User type' | 'Age' | 'Region'
+  value: string
+  totalEligibleTx: string
+  failedEligibleTx: string
+  shownInterest: string
+  conversion: string
+}[] = [
+  { dimension: 'User type', value: 'NTC', totalEligibleTx: '12,420', failedEligibleTx: '2,140', shownInterest: '6,880', conversion: '4,960' },
+  { dimension: 'User type', value: 'ETB', totalEligibleTx: '21,880', failedEligibleTx: '3,010', shownInterest: '14,440', conversion: '11,220' },
+  { dimension: 'Age', value: '18–25', totalEligibleTx: '7,260', failedEligibleTx: '1,540', shownInterest: '3,850', conversion: '2,960' },
+  { dimension: 'Age', value: '26–35', totalEligibleTx: '14,630', failedEligibleTx: '2,120', shownInterest: '9,320', conversion: '7,110' },
+  { dimension: 'Age', value: '36–45', totalEligibleTx: '8,910', failedEligibleTx: '1,220', shownInterest: '5,830', conversion: '4,380' },
+  { dimension: 'Age', value: '46+', totalEligibleTx: '3,500', failedEligibleTx: '270', shownInterest: '2,320', conversion: '1,730' },
+  { dimension: 'Region', value: 'North', totalEligibleTx: '11,210', failedEligibleTx: '1,620', shownInterest: '7,380', conversion: '5,820' },
+  { dimension: 'Region', value: 'South', totalEligibleTx: '10,140', failedEligibleTx: '1,510', shownInterest: '6,580', conversion: '5,060' },
+  { dimension: 'Region', value: 'East', totalEligibleTx: '8,960', failedEligibleTx: '1,220', shownInterest: '5,780', conversion: '4,420' },
+  { dimension: 'Region', value: 'West', totalEligibleTx: '9,990', failedEligibleTx: '1,420', shownInterest: '6,540', conversion: '4,880' },
+]
+
+type AudienceWeeklyPoint = {
+  weekStart: string
+  P2P: number
+  Cashout: number
+  Merchant: number
+}
+
+const AUDIENCE_WEEKLY_BASE: AudienceWeeklyPoint[] = [
+  { weekStart: '2025-01-06', P2P: 2180, Cashout: 1650, Merchant: 1380 },
+  { weekStart: '2025-01-13', P2P: 2360, Cashout: 1740, Merchant: 1490 },
+  { weekStart: '2025-01-20', P2P: 2290, Cashout: 1680, Merchant: 1520 },
+  { weekStart: '2025-01-27', P2P: 2480, Cashout: 1820, Merchant: 1590 },
+  { weekStart: '2025-02-03', P2P: 2560, Cashout: 1890, Merchant: 1660 },
+  { weekStart: '2025-02-10', P2P: 2710, Cashout: 1980, Merchant: 1720 },
+]
+
+const AUDIENCE_WEEKLY_ELIGIBLE: AudienceWeeklyPoint[] = AUDIENCE_WEEKLY_BASE.map((p) => ({
+  weekStart: p.weekStart,
+  P2P: Math.round(p.P2P * 0.66),
+  Cashout: Math.round(p.Cashout * 0.64),
+  Merchant: Math.round(p.Merchant * 0.68),
+}))
+
+const AUDIENCE_WEEKLY_SHOWN_INTEREST: AudienceWeeklyPoint[] = AUDIENCE_WEEKLY_BASE.map((p) => ({
+  weekStart: p.weekStart,
+  P2P: Math.round(p.P2P * 0.44),
+  Cashout: Math.round(p.Cashout * 0.42),
+  Merchant: Math.round(p.Merchant * 0.46),
+}))
+
+const AUDIENCE_WEEKLY_CONVERSION: AudienceWeeklyPoint[] = AUDIENCE_WEEKLY_BASE.map((p) => ({
+  weekStart: p.weekStart,
+  P2P: Math.round(p.P2P * 0.33),
+  Cashout: Math.round(p.Cashout * 0.3),
+  Merchant: Math.round(p.Merchant * 0.34),
+}))
+
+const AUDIENCE_TREND_CHARTS: { id: string; title: string; yAxisLabel: string; points: AudienceWeeklyPoint[] }[] = [
+  { id: 'total-tx', title: 'Total transactions', yAxisLabel: 'Total transactions', points: AUDIENCE_WEEKLY_BASE },
+  {
+    id: 'eligible-tx',
+    title: 'Total eligible transactions',
+    yAxisLabel: 'Total eligible transactions',
+    points: AUDIENCE_WEEKLY_ELIGIBLE,
+  },
+  {
+    id: 'shown-interest',
+    title: 'Shown interest',
+    yAxisLabel: 'Shown interest',
+    points: AUDIENCE_WEEKLY_SHOWN_INTEREST,
+  },
+  { id: 'conversion', title: 'Conversion', yAxisLabel: 'Conversion', points: AUDIENCE_WEEKLY_CONVERSION },
+]
+
+const AUDIENCE_CHANNELS: { key: 'P2P' | 'Cashout' | 'Merchant'; color: string }[] = [
+  { key: 'P2P', color: '#10b981' },
+  { key: 'Cashout', color: '#3b82f6' },
+  { key: 'Merchant', color: '#f59e0b' },
+]
+
+function AudienceWeeklyMultiLineChart({
+  title,
+  yAxisLabel,
+  points,
+}: {
+  title: string
+  yAxisLabel: string
+  points: AudienceWeeklyPoint[]
+}) {
+  const width = 420
+  const height = 210
+  const pad = { left: 42, right: 10, top: 12, bottom: 32 }
+  const innerW = width - pad.left - pad.right
+  const innerH = height - pad.top - pad.bottom
+  const maxVal = Math.max(...points.flatMap((p) => [p.P2P, p.Cashout, p.Merchant]), 1)
+
+  const x = (idx: number) => pad.left + (idx / Math.max(points.length - 1, 1)) * innerW
+  const y = (v: number) => pad.top + (1 - v / maxVal) * innerH
+
+  const toPath = (channel: 'P2P' | 'Cashout' | 'Merchant') =>
+    points
+      .map((p, i) => `${i === 0 ? 'M' : 'L'}${x(i).toFixed(2)} ${y(p[channel]).toFixed(2)}`)
+      .join(' ')
+
+  return (
+    <article className={styles.audienceTrendCard}>
+      <div className={styles.audienceTrendCardTitle}>{title}</div>
+      <div className={styles.audienceTrendAxisLabel}>{yAxisLabel}</div>
+      <svg viewBox={`0 0 ${width} ${height}`} className={styles.audienceTrendSvg} role="img" aria-label={title}>
+        {[0, 1, 2, 3, 4].map((g) => {
+          const gy = pad.top + (g / 4) * innerH
+          return <line key={g} x1={pad.left} y1={gy} x2={pad.left + innerW} y2={gy} className={styles.audienceTrendGridLine} />
+        })}
+        <line x1={pad.left} y1={pad.top + innerH} x2={pad.left + innerW} y2={pad.top + innerH} className={styles.audienceTrendAxisLine} />
+        <line x1={pad.left} y1={pad.top} x2={pad.left} y2={pad.top + innerH} className={styles.audienceTrendAxisLine} />
+
+        {AUDIENCE_CHANNELS.map((ch) => (
+          <path
+            key={ch.key}
+            d={toPath(ch.key)}
+            fill="none"
+            stroke={ch.color}
+            strokeWidth="2.25"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        ))}
+
+        {AUDIENCE_CHANNELS.map((ch) =>
+          points.map((p, i) => (
+            <circle key={`${ch.key}-${p.weekStart}`} cx={x(i)} cy={y(p[ch.key])} r="2.3" fill={ch.color} />
+          )),
+        )}
+
+        {points.map((p, i) => (
+          <text key={p.weekStart} x={x(i)} y={height - 8} textAnchor="middle" className={styles.audienceTrendTick}>
+            {p.weekStart.slice(5)}
+          </text>
+        ))}
+      </svg>
+      <div className={styles.audienceTrendLegend}>
+        {AUDIENCE_CHANNELS.map((ch) => (
+          <span key={ch.key} className={styles.audienceTrendLegendItem}>
+            <span className={styles.audienceTrendLegendSwatch} style={{ background: ch.color }} />
+            {ch.key}
+          </span>
+        ))}
+      </div>
+    </article>
+  )
+}
+
 /** Option 2 & 3: Business Health — layered KPIs, funnel projection + dimensions & metrics multi-select (between title and table); never shows “NPA %” in the initial layer. */
 function BusinessHealthOption23BusinessHealthView() {
   const healthReports = getReportsBySubSegment('business-dashboard', 'business-health')
@@ -872,43 +1043,83 @@ function BusinessHealthOption23BusinessHealthView() {
           </button>
           {expandedOverviews.has('audience') && (
           <div className={styles.collapsibleOverviewBody}>
-          <div className={styles.metricsGrid}>
-            {activeCustomers?.metrics.map((metric: any, i: number) => (
-              <MetricCard key={i} metric={metric} report={activeCustomers} />
+          <h3 className={styles.sectionTitle} style={{ marginTop: 0, fontSize: '1rem' }}>
+            Dimension × funnel KPI view
+          </h3>
+          <div className={styles.tableSection}>
+            <table className={styles.table} aria-label="Audience funnel KPIs by dimension">
+              <thead>
+                <tr>
+                  <th>Dimension</th>
+                  <th>Dimension value</th>
+                  <th>Eligible customers</th>
+                  <th>Opted-in %</th>
+                  <th>Uptake %</th>
+                </tr>
+              </thead>
+              <tbody>
+                {AUDIENCE_FUNNEL_DIMENSION_ROWS.map((row) => (
+                  <tr key={`${row.dimension}-${row.value}`}>
+                    <td>{row.dimension}</td>
+                    <td>{row.value}</td>
+                    <td>{row.eligibleCustomers}</td>
+                    <td>{row.optedInPct}</td>
+                    <td>{row.uptakePct}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <h3 className={styles.sectionTitle} style={{ marginTop: '1.25rem', fontSize: '1rem' }}>
+            Dimension × transaction quality metrics
+          </h3>
+          <div className={styles.tableSection}>
+            <table className={styles.table} aria-label="Audience transaction quality by dimension">
+              <thead>
+                <tr>
+                  <th>Dimension</th>
+                  <th>Dimension value</th>
+                  <th>Total eligible transactions</th>
+                  <th>Total failed eligible transactions</th>
+                  <th>Total shown interest</th>
+                  <th>Conversion</th>
+                </tr>
+              </thead>
+              <tbody>
+                {AUDIENCE_TRANSACTION_DIMENSION_ROWS.map((row) => (
+                  <tr key={`${row.dimension}-${row.value}`}>
+                    <td>{row.dimension}</td>
+                    <td>{row.value}</td>
+                    <td>{row.totalEligibleTx}</td>
+                    <td>{row.failedEligibleTx}</td>
+                    <td>{row.shownInterest}</td>
+                    <td>{row.conversion}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <h3 className={styles.sectionTitle} style={{ marginTop: '1.25rem', fontSize: '1rem' }}>
+            Weekly line trends by channel
+          </h3>
+          <div className={styles.audienceTrendGrid}>
+            {AUDIENCE_TREND_CHARTS.map((chart) => (
+              <AudienceWeeklyMultiLineChart
+                key={chart.id}
+                title={chart.title}
+                yAxisLabel={chart.yAxisLabel}
+                points={chart.points}
+              />
             ))}
           </div>
-          {activeCustomers?.table && (
-            <div className={styles.tableSection}>
-              <table className={styles.table}>
-                <thead><tr>{activeCustomers.table.headers.map((h, i) => <th key={i}>{h}</th>)}</tr></thead>
-                <tbody>
-                  {activeCustomers.table.rows.map((row, i) => (
-                    <tr key={i}>{row.map((cell, j) => <td key={j}>{formatCell(cell)}</td>)}</tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-          {customerDistribution?.table && (
-            <>
-              <h3 className={styles.sectionTitle} style={{ marginTop: '1rem', fontSize: '1rem' }}>Customer & geography breakdown</h3>
-              <div className={styles.tableSection}>
-                <table className={styles.table}>
-                  <thead><tr>{customerDistribution.table.headers.map((h, i) => <th key={i}>{h}</th>)}</tr></thead>
-                  <tbody>
-                    {customerDistribution.table.rows.map((row, i) => (
-                      <tr key={i}>{row.map((cell, j) => <td key={j}>{formatCell(cell)}</td>)}</tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-              <div className={styles.sectionActions}>
-                <Link to="/segment/marketing-audience/audience-intelligence" className={styles.navLink}>
-                  <span>View detailed customer-attributes analysis</span><span>→</span>
-                </Link>
-              </div>
-            </>
-          )}
+
+          <div className={styles.sectionActions}>
+            <Link to="/segment/marketing-audience/audience-intelligence" className={styles.navLink}>
+              <span>View detailed customer-attributes analysis</span><span>→</span>
+            </Link>
+          </div>
           </div>
           )}
         </section>
@@ -1092,6 +1303,8 @@ function BusinessHealthOption23BusinessHealthView() {
 }
 
 function AudienceOverviewView({ reports }: { reports: AnyReport[] }) {
+  const portalOption = useContext(PortalOptionContext)
+  const option23AudienceView = portalOption === 2 || portalOption === 3
   const activeCustomers = reports.find((r) => r.id === 'active-customers')
   const customerDistribution = reports.find((r) => r.id === 'customer-distribution')
 
@@ -1102,40 +1315,118 @@ function AudienceOverviewView({ reports }: { reports: AnyReport[] }) {
           <div className={styles.sectionHeader}>
             <h2 className={styles.sectionTitle}>Active users overview</h2>
           </div>
-          <div className={styles.metricsGrid}>
-            {activeCustomers?.metrics.map((metric, i) => (
-              <MetricCard key={i} metric={metric} report={activeCustomers} />
-            ))}
-          </div>
-          {activeCustomers?.table && (
-            <div className={styles.tableSection}>
-              <table className={styles.table}>
-                <thead>
-                  <tr>
-                    {activeCustomers.table.headers.map((h, i) => (
-                      <th key={i}>{h}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {activeCustomers.table.rows.map((row, i) => (
-                    <tr key={i}>
-                      {row.map((cell, j) => (
-                        <td key={j}>
-                          {typeof cell === 'number'
-                            ? cell >= 1000000
-                              ? `$${(cell / 1000000).toFixed(1)}M`
-                              : cell >= 1000
-                                ? cell.toLocaleString()
-                                : cell
-                            : String(cell)}
-                        </td>
-                      ))}
+          {option23AudienceView ? (
+            <>
+              <h3 className={styles.sectionTitle} style={{ marginTop: 0, fontSize: '1rem' }}>
+                Dimension × funnel KPI view
+              </h3>
+              <div className={styles.tableSection}>
+                <table className={styles.table} aria-label="Audience funnel KPIs by dimension">
+                  <thead>
+                    <tr>
+                      <th>Dimension</th>
+                      <th>Dimension value</th>
+                      <th>Eligible customers</th>
+                      <th>Opted-in %</th>
+                      <th>Uptake %</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {AUDIENCE_FUNNEL_DIMENSION_ROWS.map((row) => (
+                      <tr key={`${row.dimension}-${row.value}`}>
+                        <td>{row.dimension}</td>
+                        <td>{row.value}</td>
+                        <td>{row.eligibleCustomers}</td>
+                        <td>{row.optedInPct}</td>
+                        <td>{row.uptakePct}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              <h3 className={styles.sectionTitle} style={{ marginTop: '1.25rem', fontSize: '1rem' }}>
+                Dimension × transaction quality metrics
+              </h3>
+              <div className={styles.tableSection}>
+                <table className={styles.table} aria-label="Audience transaction quality by dimension">
+                  <thead>
+                    <tr>
+                      <th>Dimension</th>
+                      <th>Dimension value</th>
+                      <th>Total eligible transactions</th>
+                      <th>Total failed eligible transactions</th>
+                      <th>Total shown interest</th>
+                      <th>Conversion</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {AUDIENCE_TRANSACTION_DIMENSION_ROWS.map((row) => (
+                      <tr key={`${row.dimension}-${row.value}`}>
+                        <td>{row.dimension}</td>
+                        <td>{row.value}</td>
+                        <td>{row.totalEligibleTx}</td>
+                        <td>{row.failedEligibleTx}</td>
+                        <td>{row.shownInterest}</td>
+                        <td>{row.conversion}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              <h3 className={styles.sectionTitle} style={{ marginTop: '1.25rem', fontSize: '1rem' }}>
+                Weekly line trends by channel
+              </h3>
+              <div className={styles.audienceTrendGrid}>
+                {AUDIENCE_TREND_CHARTS.map((chart) => (
+                  <AudienceWeeklyMultiLineChart
+                    key={chart.id}
+                    title={chart.title}
+                    yAxisLabel={chart.yAxisLabel}
+                    points={chart.points}
+                  />
+                ))}
+              </div>
+            </>
+          ) : (
+            <>
+              <div className={styles.metricsGrid}>
+                {activeCustomers?.metrics.map((metric, i) => (
+                  <MetricCard key={i} metric={metric} report={activeCustomers} />
+                ))}
+              </div>
+              {activeCustomers?.table && (
+                <div className={styles.tableSection}>
+                  <table className={styles.table}>
+                    <thead>
+                      <tr>
+                        {activeCustomers.table.headers.map((h, i) => (
+                          <th key={i}>{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {activeCustomers.table.rows.map((row, i) => (
+                        <tr key={i}>
+                          {row.map((cell, j) => (
+                            <td key={j}>
+                              {typeof cell === 'number'
+                                ? cell >= 1000000
+                                  ? `$${(cell / 1000000).toFixed(1)}M`
+                                  : cell >= 1000
+                                    ? cell.toLocaleString()
+                                    : cell
+                                : String(cell)}
+                            </td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </>
           )}
         </section>
 
@@ -1143,7 +1434,7 @@ function AudienceOverviewView({ reports }: { reports: AnyReport[] }) {
           <div className={styles.sectionHeader}>
             <h2 className={styles.sectionTitle}>Customer & geography breakdown</h2>
           </div>
-          {customerDistribution?.table && (
+          {!option23AudienceView && customerDistribution?.table && (
             <div className={styles.tableSection}>
               <table className={styles.table}>
                 <thead>
